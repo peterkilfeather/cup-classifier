@@ -73,17 +73,17 @@ _Avoid_: CNA (copy number alteration — correct in the paper, but CNV is broade
 **100kb Fragment End-Density Profile**:
 A feature set derived from 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to counts per million (CPM). The full genome-wide matrix (`input/fragmentomic/end_density/all_samples_ends_100kb_CPM_matrix.tsv`, ~31K bins) contains all bins with no label-informed selection — usable for feature selection inside cross-validation without leakage.
 
-Two pre-selected subsets also sit alongside it in `input/fragmentomic/end_density/`:
+Two pre-selected subsets are archived at `input/archived/`:
 - `all_samples_selected_100kb_bin_features.tsv`: 24 bins selected by comparing cancer tissues to healthy controls (FDR < 0.05, |delta mean CPM| >= 10)
 - `all_samples_tissue_unique_100kb_bin_features.tsv`: 17 tissue-unique bins from that selection
 - These pre-selected subsets are **flagged for potential data leakage** — the selection used the same samples, and any analysis using these files must account for the leaked label information.
 _Avoid_: (none)
 
 **tumortype39 / tt39 Panel**:
-A set of methylation probes previously identified by this group as effective for tissue-of-origin discrimination. The file `input/methylation/tumortype39_annotated_seq.txt` lists which probes belong to this panel.
+A set of 39 methylation probes previously identified by this group as effective for tissue-of-origin discrimination. Probe IDs are listed in `docs/references/tt39-probes.txt`. The original annotation file is archived at `input/archived/tumortype39_annotated_seq.txt`.
 
 **Risk Score**:
-A per-sample prediction probability from an earlier classifier model, stored in `metadata/metadata_riskscores_all.csv`. Outdated — not relevant for current model development.
+A per-sample prediction probability from an earlier classifier model, stored in `input/archived/metadata_riskscores_all.csv`. Outdated — not relevant for current model development.
 _Avoid_: (do not use for training or evaluation)
 
 ## Clinical Site
@@ -164,7 +164,7 @@ Data leakage occurs when information from outside the training set influences mo
 
 ### Feature selection using the full dataset
 
-If features are selected (e.g., differentially methylated probes, informative fragment-end bins) by comparing training labels across the entire dataset before cross-validation, the feature set is contaminated with label information. This is the most common leakage pattern in genomic classifier development. The pre-selected 100kb bin files in `input/fragmentomic/end_density/` are flagged for this concern. The full genome-wide end-density matrix in the same directory has no pre-selection and is safe to use with feature selection inside cross-validation.
+If features are selected (e.g., differentially methylated probes, informative fragment-end bins) by comparing training labels across the entire dataset before cross-validation, the feature set is contaminated with label information. This is the most common leakage pattern in genomic classifier development. The pre-selected 100kb bin files in `input/archived/` are flagged for this concern. The full genome-wide end-density matrix in the same directory has no pre-selection and is safe to use with feature selection inside cross-validation.
 
 ### Sample overlap between feature sets
 
