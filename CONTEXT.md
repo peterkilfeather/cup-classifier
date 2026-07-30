@@ -72,6 +72,9 @@ _Avoid_: CNA (copy number alteration — correct in the paper, but CNV is broade
 A feature set derived from 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to counts per million (CPM). Bins were selected by comparing each cancer tissue to healthy controls using a significance + effect-size filter (FDR < 0.05, |delta mean CPM| >= 10), yielding 24 candidate bins (17 tissue-unique, 7 shared). Present in `input/unreviewed/` as `all_samples_selected_100kb_bin_features.tsv` and `all_samples_tissue_unique_100kb_bin_features.tsv`.
 _Avoid_: (on hold pending clarification — the bin selection may have used the same samples intended for classifier training, which would cause data leakage)
 
+**tumortype39 / tt39 Panel**:
+A set of methylation probes previously identified by this group as effective for tissue-of-origin discrimination. The file `input/methylation/tumortype39_annotated_seq.txt` lists which probes belong to this panel.
+
 **Risk Score**:
 A per-sample score in `metadata_riskscores_all.csv`. Origin is not yet documented.
 
@@ -147,12 +150,6 @@ Missingness within a feature file also varies — methylation data is in long fo
 
 Same concept recorded differently across sources: "White" vs "Caucasian" vs "white"; "Ukraine" vs "Slavic"; Sowalsky and Origene use "NA". This makes ethnicity analysis unreliable without normalization.
 
-### Implications
-
-- High classification accuracy does not confirm biology — the model may learn site or year. Performance on confound-free held-out samples (e.g., pancreas from Fox Chase only, no external validation) is unreliable.
-- A truly rigorous evaluation requires at minimum cross-validation stratified by Source, or better, external validation from a source unseen during training.
-- Feature importance analysis must distinguish between biologically meaningful features and features that correlate with batch (e.g., read depth, GC bias, fragment length distributions that differ by library prep).
-
 ## Data Leakage
 
 Data leakage occurs when information from outside the training set influences model development, producing an optimistically biased estimate of generalization performance. In this project, leakage can arise from several sources:
@@ -178,3 +175,9 @@ Normalization steps applied across all samples together (rather than within each
 - Normalization parameters (means, scales, PCA loadings) must be estimated on training folds and applied to held-out folds.
 - Sample overlap between feature sets must be tracked and documented explicitly.
 - External validation on an independent cohort (different source, different collection period) is the strongest guard against both leakage and batch confounding.
+
+## Implications
+
+- High classification accuracy does not confirm biology — the model may learn site or year. Performance on confound-free held-out samples (e.g., pancreas from Fox Chase only, no external validation) is unreliable.
+- A truly rigorous evaluation requires at minimum cross-validation stratified by Source, or better, external validation from a source unseen during training.
+- Feature importance analysis must distinguish between biologically meaningful features and features that correlate with batch (e.g., read depth, GC bias, fragment length distributions that differ by library prep).
