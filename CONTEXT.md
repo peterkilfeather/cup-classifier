@@ -82,9 +82,9 @@ _Avoid_: Source, hospital, cohort
 
 ## Batch Effects and Confounding
 
-The dataset has severe confounding between tissue-of-origin and non-biological variables. These confounds must be addressed in experimental design and model validation.
+The dataset has potential confounding between tissue-of-origin and non-biological variables. These confounds must be addressed in experimental design and model validation.
 
-### Source ~ Tissue confound (most severe)
+### Source ~ Tissue confound
 
 Most cancer tissue types come from a single clinical site:
 
