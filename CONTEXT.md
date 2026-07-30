@@ -83,7 +83,8 @@ _Avoid_: (none)
 A set of methylation probes previously identified by this group as effective for tissue-of-origin discrimination. The file `input/methylation/tumortype39_annotated_seq.txt` lists which probes belong to this panel.
 
 **Risk Score**:
-A per-sample score in `metadata_riskscores_all.csv`. Origin is not yet documented.
+A per-sample prediction probability from an earlier classifier model, stored in `metadata/metadata_riskscores_all.csv`. Outdated — not relevant for current model development.
+_Avoid_: (do not use for training or evaluation)
 
 ## Clinical Site
 One of the hospitals or tissue banks that contributed plasma samples: Fox Chase, Audubon, Sowalsky, NIH Clinical Center. Relevant for batch effect analysis.
