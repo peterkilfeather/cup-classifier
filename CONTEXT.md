@@ -132,3 +132,29 @@ Liver samples are coded as Source="Audobon", stomach and healthyblood as "Audubo
 - High classification accuracy does not confirm biology — the model may learn site or year. Performance on confound-free held-out samples (e.g., pancreas from Fox Chase only, no external validation) is unreliable.
 - A truly rigorous evaluation requires at minimum cross-validation stratified by Source, or better, external validation from a source unseen during training.
 - Feature importance analysis must distinguish between biologically meaningful features and features that correlate with batch (e.g., read depth, GC bias, fragment length distributions that differ by library prep).
+
+## Data Leakage
+
+Data leakage occurs when information from outside the training set influences model development, producing an optimistically biased estimate of generalization performance. In this project, leakage can arise from several sources:
+
+### Feature selection using the full dataset
+
+If features are selected (e.g., differentially methylated probes, informative fragment-end bins) by comparing training labels across the entire dataset before cross-validation, the feature set is contaminated with label information. This is the most common leakage pattern in genomic classifier development. The 100kb fragment end-density profiles (see above) are flagged for this concern pending clarification.
+
+### Sample overlap between feature sets
+
+Some samples in the feature files may have no matching entry in the methylation data (22 metadata samples are missing from the probe-meth and FEM4 feature tables). If analyses are run on different sample subsets without tracking the overlap, leakage can occur when the same sample appears in both a discovery and validation set.
+
+### Preprocessing informed by all samples
+
+Normalization steps applied across all samples together (rather than within each cross-validation fold) leak information between train and test splits. Examples include:
+- Global mean centering or scaling
+- PCA or dimensionality reduction fitted on all samples
+- Imputation of missing values using statistics from the full dataset
+
+### Avoiding leakage
+
+- Any feature selection or dimensionality reduction must be performed inside the cross-validation loop, on training folds only.
+- Normalization parameters (means, scales, PCA loadings) must be estimated on training folds and applied to held-out folds.
+- Sample overlap between feature sets must be tracked and documented explicitly.
+- External validation on an independent cohort (different source, different collection period) is the strongest guard against both leakage and batch confounding.
