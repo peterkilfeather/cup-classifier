@@ -13,15 +13,15 @@ The anatomical site or tissue type where the cancer originated (e.g. colon, lung
 _Avoid_: Tumor type, cancer type, primary site (though used in data files — these are synonyms)
 
 **Class Label**:
-One of the values in the `Tissue` column of the metadata: `colon`, `liver`, `pancreas`, `prostate`, `stomach`, `ovary`, `healthyblood`. The prediction target for both classifiers.
+One of the values in the `Tissue` column of the cleaned metadata: `colon`, `liver`, `pancreas`, `prostate`, `stomach`, `healthyblood`. The prediction target for both classifiers. (Ovary was eliminated during data cleaning — no BCT annotation on any sample in that class.)
 _Avoid_: Tissue type (ambiguous with Tissue-of-Origin)
 
 **Full Classifier**:
-The multiclass classifier that predicts across all 7 class labels: {healthyblood, colon, liver, pancreas, prostate, stomach, ovary}. Distinguishes both cancer-vs-healthy and tissue-of-origin among cancers.
+The multiclass classifier that predicts across all 6 class labels: {healthyblood, colon, liver, pancreas, prostate, stomach}. Distinguishes both cancer-vs-healthy and tissue-of-origin among cancers.
 _Avoid_: The full model, classifier v1
 
 **Tissue-of-Origin (TOO) Classifier**:
-The multiclass classifier that predicts among the 6 cancer tissue class labels: {colon, liver, pancreas, prostate, stomach, ovary}. Applied to samples already known to be cancer (e.g. clinically confirmed CUP).
+The multiclass classifier that predicts among the 5 cancer tissue class labels: {colon, liver, pancreas, prostate, stomach}. Applied to samples already known to be cancer (e.g. clinically confirmed CUP).
 _Avoid_: TOO-only model, reduced classifier
 
 **Healthy Control**:
@@ -87,7 +87,7 @@ A per-sample prediction probability from an earlier classifier model, stored in 
 _Avoid_: (do not use for training or evaluation)
 
 ## Clinical Site
-One of the hospitals or tissue banks that contributed plasma samples: Fox Chase, Audubon, Sowalsky, NIH Clinical Center. Relevant for batch effect analysis.
+One of the hospitals or tissue banks that contributed plasma samples: Fox Chase, Audubon (includes samples originally coded as "Audobon"), Sowalsky, NIH Clinical Center. Relevant for batch effect analysis.
 _Avoid_: Source, hospital, cohort
 
 ## Batch Effects and Confounding
@@ -100,21 +100,19 @@ Most cancer tissue types come from a single clinical site:
 
 | Tissue | Sources |
 |--------|---------|
-| colon | Fox Chase only |
-| ovary | Fox Chase only |
-| pancreas | Fox Chase only |
-| prostate | Fox Chase + Sowalsky (25 of 47 from Sowalsky) |
-| liver | Fox Chase (15) + Audobon (12) |
-| stomach | Fox Chase (12) + Audubon (12) |
-| healthyblood | Audubon (34) + NIH Clinical Center (26) |
+| colon | Fox Chase only (22) |
+| pancreas | Fox Chase only (19) |
+| prostate | Fox Chase (18) + Sowalsky (20) |
+| liver | Fox Chase (15) + Audubon (9) |
+| stomach | Fox Chase (11) + Audubon (10) |
+| healthyblood | Audubon (27) + NIH Clinical Center (13) |
 
 This means a classifier might learn site-specific technical artifacts (library prep, sequencer, storage) rather than biological tissue-of-origin signal. Samples from Fox Chase dominate most cancer classes, while healthy controls come exclusively from other sites.
 
 ### Year Drawn ~ Tissue confound
 
-- All 2023 healthyblood (34, Audubon)
-- All 2025 healthyblood (26, NIH)
-- All 2024 liver (12, Audobon)
+- All healthyblood from 2023 (27, Audubon) or 2025 (13, NIH)
+- All 2024 liver (9, Audubon)
 - Most prostate from 2018-2021
 
 Temporal effects (reagent lot, sequencing run, protocol drift) could produce spurious correlations.
@@ -122,41 +120,50 @@ Temporal effects (reagent lot, sequencing run, protocol drift) could produce spu
 ### BCT (Blood Collection Tube) ~ Tissue confound
 
 - ACD tubes (a citrate formulation): only colon (13 samples)
-- Citrate tubes: dominantly liver (15) + pancreas (25) + 1 prostate
-  - Combined ACD + Citrate covers colon (13), liver (15), pancreas (25), prostate (1)
-- Streck tubes: only prostate (21, all Sowalsky)
-- EDTA tubes: most diverse (healthyblood, stomach, prostate, liver, colon)
+- Citrate tubes: dominantly liver (15) + pancreas (19) + 1 prostate
+- Streck tubes: only prostate (20, all Sowalsky)
+- EDTA tubes: most diverse (healthyblood 40, stomach 21, prostate 17, colon 9, liver 9)
 
 ### Sex confound
 
-Sowalsky samples (all prostate) are 100% male. Other sources skew male (Fox Chase 69%, Audubon 63%). The dataset overall is male-dominated.
-
-### Audobon / Audubon
-
-Liver samples are coded as Source="Audobon", stomach and healthyblood as "Audubon" — likely the same institution with inconsistent spelling in the metadata.
+Sowalsky samples (all prostate, 20 samples) are 100% male. Other sources skew male (Fox Chase 80%, Audubon 65%, NIH 54%). The dataset overall is male-dominated (125 of 164).
 
 ## Data Quality
 
-### Missingness
+Data cleaning was performed in issue #7 (see `docs/data-quality-provenance.md` for full decision record). The raw metadata (220 samples) was reduced to 164 clean samples.
 
-Not all samples appear across all feature modalities. Of 220 samples with metadata:
+### Exclusions
 
-| Modality | Samples present |
-|----------|----------------|
-| Metadata | 220 |
-| Methylation (probe_meth) | 198 |
-| FEM4 | 198 |
-| Fragment length | 196 |
-| CNVkit | 198 |
-| All four + metadata | 196 |
+| Reason | Samples dropped |
+|--------|----------------|
+| gDNA samples (not cfDNA) | 2 |
+| Not sent for sequencing | 4 |
+| Ovary class (no BCT on any sample) | 11 |
+| Metadata-only (no feature data) | 17 |
+| Missing BCT (have feature data) | 21 |
+| Duplicate metadata row | 1 |
 
-22 samples from the metadata are missing from the methylation and FEM4 feature tables entirely. These are mostly `V3x_Sx` and `V1x_Sx` samples. The cause of missingness (sequencing failure, QC exclusion, or other) should be understood before modelling.
+### Cleaned feature modalities
 
-Missingness within a feature file also varies — methylation data is in long format (one row per sample per probe), and not every sample-probe pair may be present if coverage was insufficient at particular loci. This per-feature missingness must be handled explicitly (e.g., imputation, filtering by min coverage depth) rather than silently dropped.
+| Modality | Samples present | Notes |
+|----------|----------------|-------|
+| Methylation (probe_meth) | 164 (after filtering) | Zero all-NaN probes across all variants |
+| FEM4 | 164 (after filtering) | Zero all-NaN features |
+| Fragment length | 196 (pre-join) | `tri_450_510` removed (all-NaN); cleaned file at `*_qc.csv` |
+| CNVkit | 164 (after filtering) | Zero all-NaN features across all 3 thresholds |
+| End density | 164 (after filtering) | Zero all-NaN bins |
 
-### Ethnicity coding inconsistency
+Inner join with `metadata_cleaned.csv` is the expected filtering step.
 
-Same concept recorded differently across sources: "White" vs "Caucasian" vs "white"; "Ukraine" vs "Slavic"; Sowalsky and Origene use "NA". This makes ethnicity analysis unreliable without normalization.
+### Standardizations applied
+
+- **Source**: "Audobon" → "Audubon" (same institution, correct spelling)
+- **Race**: White/Caucasian/white → White; values mapped to White/Black/Asian/Other/NA
+- **Ethnicity**: Ukraine/Slavic → Slavic; Non-Spanish variants → Non-Hispanic; values mapped to Non-Hispanic/Slavic/Hispanic/Unknown/NA
+
+### Per-feature missingness
+
+Methylation data is in long format (one row per sample per probe), and not every sample-probe pair may be present if coverage was insufficient. This per-feature missingness must be handled downstream (imputation, min-coverage filtering).
 
 ## Data Leakage
 
@@ -168,7 +175,7 @@ If features are selected (e.g., differentially methylated probes, informative fr
 
 ### Sample overlap between feature sets
 
-Some samples in the feature files may have no matching entry in the methylation data (22 metadata samples are missing from the probe-meth and FEM4 feature tables). If analyses are run on different sample subsets without tracking the overlap, leakage can occur when the same sample appears in both a discovery and validation set.
+Some samples in the feature files may have no matching entry in the methylation data (17 metadata-only samples remain in the cleaned set after other exclusions). If analyses are run on different sample subsets without tracking the overlap, leakage can occur when the same sample appears in both a discovery and validation set.
 
 ### Preprocessing informed by all samples
 
