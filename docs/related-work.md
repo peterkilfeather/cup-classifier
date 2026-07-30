@@ -25,7 +25,7 @@ Bie et al., *Nature Communications*, 2023. https://doi.org/10.1038/s41467-023-41
 - Same chemistry (EM-seq) and same feature types (methylation, fragmentation, FEM, CNV)
 - FEM was their strongest modality — supports the value of the FEM4 data in this project
 - Their CSO approach is conceptually analogous to the 148 targeted probes used here
-- 100-kb bins used for CNA and fragmentation — same bin size as the unreviewed end-density profiles
+- 100-kb bins used for CNA and fragmentation — same bin size as the end-density profiles
 - Demonstrated split-by-hospital cross-validation as a robustness check (directly relevant to the Source confound documented in CONTEXT.md)
 
 **Key differences from this project:**
