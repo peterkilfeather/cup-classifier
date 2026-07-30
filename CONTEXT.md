@@ -79,3 +79,57 @@ A per-sample score in `metadata_riskscores_all.csv`. Origin is not yet documente
 ## Clinical Site
 One of the hospitals or tissue banks that contributed plasma samples: Fox Chase, Audubon, Sowalsky, NIH Clinical Center. Relevant for batch effect analysis.
 _Avoid_: Source, hospital, cohort
+
+## Batch Effects and Confounding
+
+The dataset has severe confounding between tissue-of-origin and non-biological variables. These confounds must be addressed in experimental design and model validation.
+
+### Source ~ Tissue confound (most severe)
+
+Most cancer tissue types come from a single clinical site:
+
+| Tissue | Sources |
+|--------|---------|
+| colon | Fox Chase only |
+| ovary | Fox Chase only |
+| pancreas | Fox Chase only |
+| prostate | Fox Chase + Sowalsky (25 of 47 from Sowalsky) |
+| liver | Fox Chase (15) + Audobon (12) |
+| stomach | Fox Chase (12) + Audubon (12) |
+| healthyblood | Audubon (34) + NIH Clinical Center (26) |
+
+This means a classifier might learn site-specific technical artifacts (library prep, sequencer, storage) rather than biological tissue-of-origin signal. Samples from Fox Chase dominate most cancer classes, while healthy controls come exclusively from other sites.
+
+### Year Drawn ~ Tissue confound
+
+- All 2023 healthyblood (34, Audubon)
+- All 2025 healthyblood (26, NIH)
+- All 2024 liver (12, Audobon)
+- Most prostate from 2018-2021
+
+Temporal effects (reagent lot, sequencing run, protocol drift) could produce spurious correlations.
+
+### BCT (Blood Collection Tube) ~ Tissue confound
+
+- ACD tubes: only colon (13 samples)
+- Citrate tubes: dominantly liver (15) + pancreas (25)
+- Streck tubes: only prostate (21, all Sowalsky)
+- EDTA tubes: most diverse (healthyblood, stomach, prostate, liver, colon)
+
+### Sex confound
+
+Sowalsky samples (all prostate) are 100% male. Other sources skew male (Fox Chase 69%, Audubon 63%). The dataset overall is male-dominated.
+
+### Ethnicity coding inconsistency
+
+Same concept recorded differently across sites: "White" vs "Caucasian" vs "white"; "Ukraine" vs "Slavic"; Sowalsky/Origene use "NA". This makes ethnicity analysis unreliable without normalization.
+
+### Audobon / Audubon
+
+Liver samples are coded as Source="Audobon", stomach and healthyblood as "Audubon" — likely the same institution with inconsistent spelling in the metadata.
+
+### Implications
+
+- High classification accuracy does not confirm biology — the model may learn site or year. Performance on confound-free held-out samples (e.g., pancreas from Fox Chase only, no external validation) is unreliable.
+- A truly rigorous evaluation requires at minimum cross-validation stratified by Source, or better, external validation from a source unseen during training.
+- Feature importance analysis must distinguish between biologically meaningful features and features that correlate with batch (e.g., read depth, GC bias, fragment length distributions that differ by library prep).
