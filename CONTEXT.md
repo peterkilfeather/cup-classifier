@@ -119,13 +119,32 @@ Temporal effects (reagent lot, sequencing run, protocol drift) could produce spu
 
 Sowalsky samples (all prostate) are 100% male. Other sources skew male (Fox Chase 69%, Audubon 63%). The dataset overall is male-dominated.
 
-### Ethnicity coding inconsistency
-
-Same concept recorded differently across sites: "White" vs "Caucasian" vs "white"; "Ukraine" vs "Slavic"; Sowalsky/Origene use "NA". This makes ethnicity analysis unreliable without normalization.
-
 ### Audobon / Audubon
 
 Liver samples are coded as Source="Audobon", stomach and healthyblood as "Audubon" — likely the same institution with inconsistent spelling in the metadata.
+
+## Data Quality
+
+### Missingness
+
+Not all samples appear across all feature modalities. Of 220 samples with metadata:
+
+| Modality | Samples present |
+|----------|----------------|
+| Metadata | 220 |
+| Methylation (probe_meth) | 198 |
+| FEM4 | 198 |
+| Fragment length | 196 |
+| CNVkit | 198 |
+| All four + metadata | 196 |
+
+22 samples from the metadata are missing from the methylation and FEM4 feature tables entirely. These are mostly `V3x_Sx` and `V1x_Sx` samples. The cause of missingness (sequencing failure, QC exclusion, or other) should be understood before modelling.
+
+Missingness within a feature file also varies — methylation data is in long format (one row per sample per probe), and not every sample-probe pair may be present if coverage was insufficient at particular loci. This per-feature missingness must be handled explicitly (e.g., imputation, filtering by min coverage depth) rather than silently dropped.
+
+### Ethnicity coding inconsistency
+
+Same concept recorded differently across sources: "White" vs "Caucasian" vs "white"; "Ukraine" vs "Slavic"; Sowalsky and Origene use "NA". This makes ethnicity analysis unreliable without normalization.
 
 ### Implications
 
