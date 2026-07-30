@@ -110,8 +110,9 @@ Temporal effects (reagent lot, sequencing run, protocol drift) could produce spu
 
 ### BCT (Blood Collection Tube) ~ Tissue confound
 
-- ACD tubes: only colon (13 samples)
-- Citrate tubes: dominantly liver (15) + pancreas (25)
+- ACD tubes (a citrate formulation): only colon (13 samples)
+- Citrate tubes: dominantly liver (15) + pancreas (25) + 1 prostate
+  - Combined ACD + Citrate covers colon (13), liver (15), pancreas (25), prostate (1)
 - Streck tubes: only prostate (21, all Sowalsky)
 - EDTA tubes: most diverse (healthyblood, stomach, prostate, liver, colon)
 
