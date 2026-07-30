@@ -57,7 +57,9 @@ The fraction of methylated molecules at a given probe or CpG site, ranging 0–1
 _Avoid_: Beta score, methylation level, CpG_frac (though used in data files — this is a synonym)
 
 **Fragmentomic Feature**:
-A feature derived from cfDNA fragment length distribution, including short/long fragment ratios (e.g. short_long_ratio_165), modal length, and bin counts across size windows.
+A feature derived from cfDNA fragment properties. Includes:
+- **Fragment length distribution**: short/long fragment ratios, modal length, bin counts across size windows
+- **Fragment End-Density profile**: 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to CPM
 _Avoid_: Fragmentomics feature, fragment size feature
 
 **Fragment End Motif (FEM4)**:
@@ -68,9 +70,14 @@ _Avoid_: End motif, fragment start motif, 4-mer
 A feature derived from cfDNA read-depth/coverage changes, reflecting chromosomal gains and losses in tumor-derived cfDNA. Processed via cnvkit.
 _Avoid_: CNA (copy number alteration — correct in the paper, but CNV is broader)
 
-**100kb Fragment End-Density Profile** (on hold):
-A feature set derived from 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to counts per million (CPM). Bins were selected by comparing each cancer tissue to healthy controls using a significance + effect-size filter (FDR < 0.05, |delta mean CPM| >= 10), yielding 24 candidate bins (17 tissue-unique, 7 shared). Present in `input/unreviewed/` as `all_samples_selected_100kb_bin_features.tsv` and `all_samples_tissue_unique_100kb_bin_features.tsv`.
-_Avoid_: (on hold pending clarification — the bin selection may have used the same samples intended for classifier training, which would cause data leakage)
+**100kb Fragment End-Density Profile**:
+A feature set derived from 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to counts per million (CPM). The full genome-wide matrix (`input/fragmentomic/end_density/all_samples_ends_100kb_CPM_matrix.tsv`, ~31K bins) contains all bins with no label-informed selection — usable for feature selection inside cross-validation without leakage.
+
+Two pre-selected subsets also exist in `input/unreviewed/`:
+- `all_samples_selected_100kb_bin_features.tsv`: 24 bins selected by comparing cancer tissues to healthy controls (FDR < 0.05, |delta mean CPM| >= 10)
+- `all_samples_tissue_unique_100kb_bin_features.tsv`: 17 tissue-unique bins from that selection
+- These pre-selected subsets are **flagged for potential data leakage** — the selection used the same samples, and any analysis using these files must account for the leaked label information.
+_Avoid_: (none)
 
 **tumortype39 / tt39 Panel**:
 A set of methylation probes previously identified by this group as effective for tissue-of-origin discrimination. The file `input/methylation/tumortype39_annotated_seq.txt` lists which probes belong to this panel.
@@ -156,7 +163,7 @@ Data leakage occurs when information from outside the training set influences mo
 
 ### Feature selection using the full dataset
 
-If features are selected (e.g., differentially methylated probes, informative fragment-end bins) by comparing training labels across the entire dataset before cross-validation, the feature set is contaminated with label information. This is the most common leakage pattern in genomic classifier development. The 100kb fragment end-density profiles (see above) are flagged for this concern pending clarification.
+If features are selected (e.g., differentially methylated probes, informative fragment-end bins) by comparing training labels across the entire dataset before cross-validation, the feature set is contaminated with label information. This is the most common leakage pattern in genomic classifier development. The pre-selected 100kb bin files in `input/unreviewed/` are flagged for this concern. The full genome-wide end-density matrix in `input/fragmentomic/end_density/` has no pre-selection and is safe to use with feature selection inside cross-validation.
 
 ### Sample overlap between feature sets
 
