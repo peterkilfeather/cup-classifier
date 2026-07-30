@@ -77,12 +77,14 @@ Outdated predictions from an earlier model. Archived.
 - THEMIS paper as relevant prior art
 - All confounds documented but not yet mitigated
 
-## Pending decisions for wayfinder
+## Starting decisions for wayfinder (not exhaustive)
 
-1. **Confound mitigation strategy** — how to handle Source ~ Tissue, BCT, Year confounding. Options include stratified CV, subsetting to multi-source tissues, external validation design.
-2. **Feature modality prioritization** — which features to start with (methylation only? all at once? sequential addition for interpretability?)
-3. **Model selection** — which ML approach (logistic regression, random forest, XGBoost, ensemble?)
-4. **Evaluation protocol** — what constitutes a credible result given the confounds (split-by-source? leave-one-source-out? stratified CV?)
-5. **Feature importance methodology** — how to determine which features drive performance (SHAP, permutation importance, ablation?)
+The decisions below were surfaced during domain modeling. The wayfinder may discover additional decisions and should not be limited to this list. Options listed are illustrative examples only — not a closed set. Research and brainstorming are expected.
+
+1. **Confound mitigation strategy** — how to handle Source ~ Tissue, BCT, Year confounding
+2. **Feature modality prioritization** — which features to start with and in what order
+3. **Model selection** — which ML approach
+4. **Evaluation protocol** — what constitutes a credible result given the confounds
+5. **Feature importance methodology** — how to determine which features drive performance
 6. **Missingness handling** — imputation strategy or sample exclusion
-7. **Enriched vs unenriched methylation** — both available, need to decide which to use
+7. **Enriched vs unenriched methylation** — which capture method to use
