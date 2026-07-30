@@ -1,0 +1,221 @@
+Sample_ID,Barcode,Sex,Race,Ethnicity,Year_Drawn,Age,Age_Bin,Pathologic_Stage,Clinical_Stage,Status,Stage_type,Histology,Tumor_site,Year_of_Initial_Diagnosis,Tissue,Tumor_Size_Foci,Source,Unnamed: 0,TCGA,risk_score,_merge
+VY_S1,159280,Male,White,"Non-Spanish, Non-His",2019,67,60-69,2A,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Cecum,2019,colon,,Fox Chase,116,COAD,0.977346003,both
+VY_S2,159809,Male,White,"Non-Spanish, Non-His",2019,53,50-59,3B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2019,colon,,Fox Chase,117,COAD,2.83E-05,both
+VY_S7,160425,Male,White,"Non-Spanish, Non-His",2020,51,50-59,2B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, ascending",2020,colon,,Fox Chase,120,COAD,2.73E-08,both
+VY_S8,160527,Male,Black,"Non-Spanish, Non-His",2020,58,50-59,3C,3C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2019,colon,,Fox Chase,121,COAD,1,both
+VY_S4,165652,Male,White,"Non-Spanish, Non-His",2021,33,30-39,2A,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, ascending",2021,colon,,Fox Chase,118,COAD,0.004673713,both
+V23_S7,166157,Male,White,"Non-Spanish, Non-His",2021,71,70-79,NA,2C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2021,colon,,Fox Chase,130,COAD,0.900372922,both
+V23_S8,166567,Male,White,"Non-Spanish, Non-His",2022,58,50-59,2A,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, transverse",2022,colon,,Fox Chase,131,COAD,0.121369377,both
+V24_S1,166900,Female,White,"Non-Spanish, Non-His",2022,56,50-59,2A,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Cecum,2022,colon,,Fox Chase,132,COAD,0.999999881,both
+V24_S2,167424,Male,White,"Non-Spanish, Non-His",2022,74,70-79,3B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2022,colon,,Fox Chase,133,COAD,0.894083917,both
+V23_S6,143592,Male,White,"Non-Spanish, Non-His",2015,51,50-59,3A,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, descending",2015,colon,,Fox Chase,129,COAD,6.40E-05,both
+V21_S11,109536,Female,Black,"Non-Spanish, Non-His",2005,52,50-59,4,4,Cancer,Pathologic_stage_group,Adenocarcinoma in adenomatous polyp,Cecum,2005,colon,,Fox Chase,111,COAD,0.996891201,both
+V21_S15,108156,Female,White,"Non-Spanish, Non-His",2004,54,50-59,3B,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, splenic flexure",2004,colon,,Fox Chase,115,COAD,0.999795795,both
+V23_S1,140652,Female,White,"Non-Spanish, Non-His",2014,58,50-59,3B,1,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, NOS",2014,colon,,Fox Chase,127,COAD,0.510822296,both
+VZ_S2,110349,Male,White,"Non-Spanish, Non-His",2005,60,60-69,3B,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2005,colon,,Fox Chase,122,COAD,0.845997334,both
+V21_S13,110288,Male,White,"Non-Spanish, Non-His",2005,60,60-69,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Appendix,2005,colon,,Fox Chase,113,COAD,0.999995649,both
+VZ_S3,116302,Male,White,Unknown Whether Span,2008,60,60-69,3B,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2008,colon,,Fox Chase,123,COAD,1.58E-06,both
+VZ_S7,119244,Male,White,"Non-Spanish, Non-His",2009,62,60-69,3B,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2009,colon,,Fox Chase,125,COAD,0.577918708,both
+VZ_S8,118683,Male,White,"Non-Spanish, Non-His",2009,63,60-69,3B,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2008,colon,,Fox Chase,126,COAD,0.482112795,both
+V21_S12,113567,Female,White,"Non-Spanish, Non-His",2007,65,60-69,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Cecum,2007,colon,,Fox Chase,112,COAD,0.997552991,both
+V23_S3,120506,Male,White,Unknown Whether Span,2009,68,60-69,3B,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, ascending",2009,colon,,Fox Chase,128,COAD,0.002342459,both
+VZ_S6,109387,Male,White,"Non-Spanish, Non-His",2005,75,70-79,3B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, sigmoid",2005,colon,,Fox Chase,124,COAD,0.537453115,both
+V21_S14,113270,Male,White,"Non-Spanish, Non-His",2007,82,80-89,3C,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Cecum,2007,colon,,Fox Chase,114,COAD,0.999401033,both
+V10_S3,MAD18-00622,Female,White,"Non-Spanish, Non-His",,59,50-59,4A,NA,Cancer,Pathologic_stage_group,,"Colon, right/ascending",,colon_gDNA,2.5,Fox Chase,,COAD,NA,left_only
+V24_S3,167592,Female,White,"Non-Spanish, Non-His",2022,61,60-69,3B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Colon, hepatic flexure",2022,colon,,Fox Chase,,COAD,NA,left_only
+V3_S3,110229,Male,White,"Non-Spanish, Non-His",2005,72,70-79,4,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Liver,2005,liver,,Fox Chase,7,LIHC,0.999954045,both
+V5_S2,110604,Male,White,"Non-Spanish, Non-His",2006,68,60-69,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2006,liver,,Fox Chase,12,LIHC,0.99999994,both
+V3_S1,110858,Male,White,"Non-Spanish, Non-His",2006,46,40-49,1,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2003,liver,,Fox Chase,6,LIHC,0.002423693,both
+V3_S4,111561,Female,Black,"Non-Spanish, Non-His",2006,66,60-69,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2004,liver,,Fox Chase,8,LIHC,0.108132906,both
+V5_S1,116079,Male,White,"Non-Spanish, Non-His",2008,57,50-59,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2008,liver,,Fox Chase,11,LIHC,0.415661335,both
+V5_S3,116543,Female,White,"Non-Spanish, Non-His",2008,56,50-59,1,NA,Cancer,Pathologic_stage_group,"Cholangiocarcinoma (C22.1, C24.0)",Liver,2008,liver,,Fox Chase,13,LIHC,0.99347049,both
+V5_S4,116677,Male,White,"Non-Spanish, Non-His",2008,70,70-79,1,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2008,liver,,Fox Chase,14,LIHC,0.021072816,both
+V6_S1,116832,Male,White,"Non-Spanish, Non-His",2008,63,60-69,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2011,liver,,Fox Chase,17,LIHC,0.99977982,both
+V6_S2,118434,Male,White,"Non-Spanish, Non-His",2008,68,60-69,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2009,liver,,Fox Chase,18,LIHC,0.03461016,both
+V6_S3,119417,Male,Other,"Non-Spanish, Non-His",2009,60,60-69,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2008,liver,,Fox Chase,19,LIHC,0.998566151,both
+V6_S4,119787,Female,White,"Non-Spanish, Non-His",2009,72,70-79,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2009,liver,,Fox Chase,20,LIHC,0.506053329,both
+V6_S5,119844,Female,White,"Non-Spanish, Non-His",2009,66,60-69,NA,NA,Cancer,Pathologic_stage_group,"Leiomyosarcoma, NOS",Liver,2007,liver,,Fox Chase,21,LIHC,0.993796051,both
+V6_S8,119913,Male,Black,"Non-Spanish, Non-His",2009,58,50-59,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2015,liver,,Fox Chase,24,LIHC,0.406498313,both
+V6_S6,121443,Female,White,Unknown Whether Span,2009,60,60-69,1,NA,Cancer,Pathologic_stage_group,"Cholangiocarcinoma (C22.1, C24.0)",Liver,2009,liver,,Fox Chase,22,LIHC,2.58E-06,both
+V6_S7,122141,Male,White,"Non-Spanish, Non-His",2010,70,70-79,NA,NA,Cancer,Pathologic_stage_group,"Hepatocellular carcinoma, NOS (C22.0)",Liver,2009,liver,,Fox Chase,23,LIHC,0.674761772,both
+V24_S5,22-004307,Male,Caucasian,Slavic,2024,72,70-79,4A,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,134,LIHC,0.989047885,both
+V24_S6,22-004275,Female,Caucasian,Slavic,2024,67,60-69,NA,4,Cancer,Pathologic_stage_group,Cholangiocarcinoma,Liver,2024,liver,,Audubon,135,LIHC,0.999994516,both
+V24_S8,22-004346,Male,Caucasian,Slavic,2024,54,50-59,NA,4B,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,136,LIHC,0.999908865,both
+V25_S1,22-004276,Female,Caucasian,Slavic,2024,40,40-49,3A,NA,Cancer,Pathologic_stage_group,Cholangiocarcinoma,Liver,2024,liver,,Audubon,137,LIHC,0.029232822,both
+V25_S2,20-05532,Male,Caucasian,Slavic,2024,74,70-79,2,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,138,LIHC,0.999968171,both
+V25_S3,20-05536,Female,Caucasian,Slavic,2024,66,60-69,1B,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,139,LIHC,0.999697089,both
+V25_S7,20-05531,Female,Caucasian,Slavic,2024,63,60-69,4,NA,Cancer,Pathologic_stage_group,Cholangiocarcinoma,Liver,2024,liver,,Audubon,142,LIHC,0.993228197,both
+V25_S8,20-05530,Male,Caucasian,Slavic,2024,60,60-69,2,NA,Cancer,Pathologic_stage_group,Cholangiocarcinoma,Liver,2024,liver,,Audubon,143,LIHC,0.999819756,both
+V25_S10,20-05533,Female,Caucasian,Slavic,2024,67,60-69,1B,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,144,LIHC,0.987302244,both
+V26_S2,20-05535,Male,Caucasian,Slavic,2024,64,60-69,3A,NA,Cancer,Pathologic_stage_group,Cholangiocarcinoma,Liver,2024,liver,,Audubon,146,LIHC,0.992454708,both
+V26_S3,20-05546,Female,Caucasian,Slavic,2024,70,70-79,2,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver,2024,liver,,Audubon,147,LIHC,1,both
+V24_S4,22-004306,Male,Caucasian,Slavic,2024,50,50-59,4A,NA,Cancer,Pathologic_stage_group,Hepatocellular carcinoma,Liver (NOS),2024,liver,,Audubon,,LIHC,NA,left_only
+V8_S3,151324,Male,White,"Non-Spanish, Non-His",2017,NA,NA,4,,Cancer,Pathologic_stage_group,"Carcinoma, NOS","Pancreas, head",,pancreas,,Fox Chase,,PAAD,NA,left_only
+V8_S4,119955,Female,White,Unknown Whether Span,2009,78,70-79,4,1B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2009,pancreas,,Fox Chase,,PAAD,NA,left_only
+V11_S12,152424,Male,White,"Non-Spanish, Non-His",2017,43,40-49,4,4,Cancer,Pathologic_stage_group,"Carcinoid tumor, NOS [including of appendix]","Pancreas, head",2017,pancreas,,Fox Chase,47,PAAD,2.97E-06,both
+V28_S6,145976,Female,White,"Non-Spanish, Non-His",2016,52,50-59,4,4,Cancer,Pathologic_stage_group,"Carcinoid tumor, NOS [including of appendix]","Pancreas, tail",2015,pancreas,,Fox Chase,148,PAAD,0.131947011,both
+V16_S1,145277,Male,White,"Non-Spanish, Non-His",2016,61,60-69,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, overlapping lesion",2015,pancreas,,Fox Chase,74,PAAD,0.99999994,both
+V16_S7,142906,Female,White,"Non-Spanish, Non-His",2015,55,50-59,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2015,pancreas,,Fox Chase,78,PAAD,0.984782457,both
+V16_S6,142519,Male,White,"Non-Spanish, Non-His",2015,60,60-69,4,2B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2015,pancreas,,Fox Chase,77,PAAD,0.999998212,both
+V8_S2,133719,Male,White,"Non-Spanish, Non-His",2012,62,60-69,2B,1B,Cancer,Pathologic_stage_group,"Infiltrating duct carcinoma, NOS","Pancreas, head",2012,pancreas,,Fox Chase,2,PAAD,1,both
+V17_S8,126678,Male,White,Puerto Rican,2011,53,50-59,NA,2B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2011,pancreas,,Fox Chase,87,PAAD,0.972213268,both
+V8_S7,107754,Female,White,Unknown,2004,45,40-49,4,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2004,pancreas,,Fox Chase,4,PAAD,0.032329112,both
+V16_S11,106615,Female,Black,"Non-Spanish, Non-His",2004,53,50-59,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, tail",2004,pancreas,,Fox Chase,81,PAAD,1,both
+V16_S12,151324,Male,White,"Non-Spanish, Non-His",2017,NA,NA,4,NA,Cancer,Pathologic_stage_group,"Carcinoma, NOS","Pancreas, head",,pancreas,,Fox Chase,82,PAAD,0.999820709,both
+V15_S7,108137,Male,White,Non-Spanish,2004,58,50-59,2A,3,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Body of pancreas,2004,pancreas,,Fox Chase,71,PAAD,0.800532639,both
+V13_S4,108393,Female,White,Non-Spanish,2005,68,60-69,1B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2004,pancreas,,Fox Chase,55,PAAD,0.999069333,both
+V15_S5,108702,Male,White,Non-Spanish,2005,57,50-59,2B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2005,pancreas,,Fox Chase,69,PAAD,0.997632146,both
+V15_S6,112467,Female,White,Non-Spanish,2006,59,50-59,2B,2A,Cancer,Pathologic_stage_group,"Infiltrating duct carcinoma, NOS","Pancreas, head",2006,pancreas,,Fox Chase,70,PAAD,0.996122003,both
+V8_S1,113589,Male,White,Non-Spanish,2007,64,60-69,2B,1B,Cancer,Pathologic_stage_group,"Infiltrating duct carcinoma, NOS","Pancreas, head",2007,pancreas,,Fox Chase,1,PAAD,0.584235251,both
+V15_S9,127394,Female,White,Non-Spanish,2011,63,60-69,2B,1B,Cancer,Pathologic_stage_group,"Infiltrating duct carcinoma, NOS","Pancreas, head",2011,pancreas,,Fox Chase,72,PAAD,0.134252444,both
+V13_S5,134709,Male,Black,Non-Spanish,2013,61,60-69,2B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2012,pancreas,,Fox Chase,56,PAAD,0.9589535,both
+V16_S10,119955,Female,White,Unknown Whether Span,2009,78,70-79,4,1B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2009,pancreas,,Fox Chase,80,PAAD,0.999980152,both
+V8_S6,126799,Male,White,"Non-Spanish, Non-His",2011,38,30-39,4,4,Cancer,Pathologic_stage_group,"Neuroendocrine carcinoma, NOS","Pancreas, tail",2011,pancreas,,Fox Chase,3,PAAD,4.1059e-06,both
+V8_S8,128091,Male,White,"Non-Spanish, Non-His",2011,67,60-69,4,4,Cancer,Pathologic_stage_group,"Neuroendocrine carcinoma, NOS","Pancreas, tail",2011,pancreas,,Fox Chase,5,PAAD,0.999971867,both
+V16_S3,138781,Male,White,"Non-Spanish, Non-His",2014,74,70-79,4,4,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, head",2015,pancreas,,Fox Chase,75,PAAD,0,both
+V16_S5,141472,Male,White,"Non-Spanish, Non-His",2015,64,60-69,3,3,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS","Pancreas, tail",2014,pancreas,,Fox Chase,76,PAAD,0,both
+V16_S9,100330,Male,White,"Non-Spanish, Non-His",2000,54,50-59,4A,NA,Cancer,Pathologic_stage_group,Invasive carcinoma of no special type (C50._) [BREAST ONLY],"Pancreas, head",2000,pancreas,,Fox Chase,79,PAAD,0.071986765,both
+V28_S7,145640,Male,White,"Non-Spanish, Non-His",2016,NA,NA,4,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS                                                     ","Pancreas, body                                                          ",,pancreas,,Fox Chase,,PAAD,NA,left_only
+V17_S20,02-31649,Female,Caucasian,Slavic,2021,66,60-69,NA,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,9*7,Audubon,91,STAD,0.999779463,both
+V19_S7,02-36124,Male,Caucasian,Slavic,2021,68,60-69,3A,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,6.5,Audubon,95,STAD,1,both
+V20_S10,02-37767,Female,Caucasian,Slavic,2021,38,30-39,2A,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,,Audubon,108,STAD,0.797418475,both
+V19_S1,02-38266,Male,Caucasian,Slavic,2021,61,60-69,2B,NA,Cancer,Pathologic_stage_group,Tubular adenocarcinoma,stomach,,stomach,2*1,Audubon,92,STAD,0.50144279,both
+V19_S2,02-38621,Male,Caucasian,Slavic,2021,51,50-59,2A,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,4.5,Audubon,93,STAD,1,both
+VY_S5,02-39732,Female,Caucasian,Slavic,2021,71,70-79,2B,NA,Cancer,Pathologic_stage_group,Discohesive carcinoma,stomach,,stomach,,Audubon,119,STAD,1,both
+V20_S12,02-39947,Male,Caucasian,Slavic,2021,71,70-79,2A,NA,Cancer,Pathologic_stage_group,Mucinous adenocarcinoma,stomach,,stomach,5.5,Audubon,110,STAD,0.852125764,both
+V20_S11,02-39960,Male,Caucasian,Slavic,2021,61,60-69,3A,NA,Cancer,Pathologic_stage_group,Mucinous adenocarcinoma,stomach,,stomach,"5,5*1,4",Audubon,109,STAD,0.266830534,both
+V19_S5,02-40641,Male,Caucasian,Slavic,2021,50,50-59,2B,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,8*8,Audubon,94,STAD,0.998725951,both
+V20_S9,02-40783,Male,Caucasian,Slavic,2021,58,50-59,3,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,stomach,,stomach,6,Audubon,107,STAD,0.936723828,both
+V20_S4,158291,Male,White,"Non-Spanish, Non-His",2019,69,60-69,NA,4B,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2019,stomach,,Fox Chase,102,STAD,0.999979913,both
+V20_S1,158521,Male,White,"Non-Spanish, Non-His",2019,61,60-69,NA,2B,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2019,stomach,,Fox Chase,99,STAD,0.999360025,both
+V20_S5,158557,Male,White,"Non-Spanish, Non-His",2019,68,60-69,4B,4B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",stomach,2019,stomach,,Fox Chase,103,STAD,0.99999845,both
+V20_S3,160759,Male,White,"Non-Spanish, Non-His",2020,58,50-59,NA,3,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2020,stomach,,Fox Chase,101,STAD,0.94394958,both
+V20_S6,162928,Male,White,"Non-Spanish, Non-His",2021,66,60-69,NA,4B,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2021,stomach,,Fox Chase,104,STAD,1,both
+V20_S7,164337,Male,White,"Non-Spanish, Non-His",2021,67,60-69,NA,4B,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2021,stomach,,Fox Chase,105,STAD,0.999889672,both
+V20_S8,164644,Female,White,"Non-Spanish, Non-His",2021,80,80-89,4B,4B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",stomach,2021,stomach,,Fox Chase,106,STAD,0.909114301,both
+V20_S2,166152,Female,White,"Non-Spanish, Non-His",2021,65,60-69,NA,3,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2021,stomach,,Fox Chase,100,STAD,1,both
+V19_S11,166996,Male,White,"Non-Spanish, Non-His",2022,66,60-69,4B,4B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",stomach,2022,stomach,,Fox Chase,98,STAD,0.903563082,both
+V19_S10,167341,Male,White,"Non-Spanish, Non-His",2022,45,40-49,NA,3,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2022,stomach,,Fox Chase,97,STAD,0.096534155,both
+V19_S9,167467,Male,White,"Non-Spanish, Non-His",2022,67,60-69,NA,2B,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS",stomach,2022,stomach,,Fox Chase,96,STAD,0.315148175,both
+V19_S12,166788,Male,White,"Non-Spanish, Non-His",2022,67,60-69,NA,3,Cancer,Clinical_stage_group,"Adenocarcinoma, NOS","Cardia, NOS",2022,stomach,,Fox Chase,,STAD,NA,left_only
+V19_S3,02-36505,Male,Caucasian,Slavic,2021,59,50-59,1A,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,Stomach (NOS),,stomach,"1,5*1,2*0,3*0,3",Audubon,,STAD,NA,left_only
+V19_S6,02-38613,Male,Caucasian,Slavic,2021,51,50-59,3A,NA,Cancer,Pathologic_stage_group,Adenocarcinoma,Stomach (NOS),,stomach,"9,5*3,5*1,4",Audubon,,STAD,NA,left_only
+V3_S7,158194,Male,White,"Non-Spanish, Non-His",2019,72,70-79,3B,2C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,9,PRAD,0.355428398,both
+V3_S8,158287,Male,White,"Non-Spanish, Non-His",2019,54,50-59,3B,2C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,10,PRAD,1.76E-06,both
+V5_S5,158578,Male,Other,"Spanish, NOS; Hispan",2019,61,60-69,3C,3C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,15,PRAD,0.003375999,both
+V5_S7,158621,Male,White,"Non-Spanish, Non-His",2019,58,50-59,4A,4A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,16,PRAD,0.129754096,both
+V6_S9,158781,Male,White,"Non-Spanish, Non-His",2019,49,40-49,3B,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,25,PRAD,0.002088041,both
+V6_S10,158791,Male,White,"Non-Spanish, Non-His",2019,57,50-59,3C,3C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,26,PRAD,0.00142448,both
+V6_S11,159092,Male,White,"Non-Spanish, Non-His",2019,50,50-59,3B,2B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,27,PRAD,0.00053419,both
+V7_S1,159265,Male,White,"Non-Spanish, Non-His",2019,69,60-69,NA,2A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,32,PRAD,5.98E-05,both
+V7_S2,159766,Male,White,"Non-Spanish, Non-His",2019,63,60-69,3B,2B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,33,PRAD,0.073220208,both
+V14_S2,162487,Male,White,"Non-Spanish, Non-His",2020,57,50-59,3C,3A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2020,prostate,,Fox Chase,60,PRAD,0.521715701,both
+V14_S5,163948,Male,White,"Non-Spanish, Non-His",2021,51,50-59,3B,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,61,PRAD,0.370197743,both
+V14_S6,163978,Male,White,"Non-Spanish, Non-His",2021,75,70-79,3B,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,62,PRAD,0.073402457,both
+V14_S7,165202,Male,White,"Non-Spanish, Non-His",2021,71,70-79,4A,3A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,63,PRAD,0.141869858,both
+V14_S8,165730,Male,White,"Non-Spanish, Non-His",2021,57,50-59,3B,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,64,PRAD,0,both
+V14_S9,166048,Male,White,"Non-Spanish, Non-His",2021,68,60-69,4B,4B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,65,PRAD,0.248849213,both
+V14_S10,166647,Male,White,"Non-Spanish, Non-His",2022,61,60-69,2C,2C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,66,PRAD,0.237506688,both
+V14_S11,159614,Male,White,"Non-Spanish, Non-His",2019,61,60-69,3C,3C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,67,PRAD,0.092026465,both
+V14_S12,159730,Male,White,"Non-Spanish, Non-His",2019,59,50-59,4A,3C,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2019,prostate,,Fox Chase,68,PRAD,0.999701142,both
+V15_S11,130773,Male,White,"Non-Spanish, Non-His",2012,56,50-59,3,NA,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2010,prostate,,Fox Chase,73,PRAD,0.32487756,both
+V14_S1,161703,Male,White,"Non-Spanish, Non-His",2020,68,60-69,3B,3B,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2020,prostate,,Fox Chase,,PRAD,NA,left_only
+V14_S3,163251,Male,Black,"Non-Spanish, Non-His",2021,57,50-59,3B,3A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2020,prostate,,Fox Chase,,PRAD,NA,left_only
+V14_S4,163329,Male,Black,"Non-Spanish, Non-His",2021,56,50-59,3B,3A,Cancer,Pathologic_stage_group,"Adenocarcinoma, NOS",Prostate gland,2021,prostate,,Fox Chase,,PRAD,NA,left_only
+V25_S5,162895,Male,white,,2018,75,70-79,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2013,prostate,,Sowalsky,140,PRAD,0.261728764,both
+V25_S6,205246,Male,white,,2018,64,60-69,4,4+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,141,PRAD,0.037423968,both
+V25_S11,162212,Male,white,,2019,58,50-59,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2009,prostate,,Sowalsky,145,PRAD,0.228909746,both
+V32_S3,162975,Male,white,,2018,62,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,151,PRAD,0.543418109,both
+V36_S1,162982,Male,white,,2018,73,70-79,1,benign,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2013,prostate,,Sowalsky,166,PRAD,0.971520186,both
+V32_S2,211602,Male,white,,2018,73,70-79,1,benign,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2011,prostate,,Sowalsky,150,PRAD,0.10184183,both
+V32_S4,211603,Male,white,,2018,69,60-69,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2013,prostate,,Sowalsky,152,PRAD,0,both
+V32_S5,211641,Male,white,,2018,62,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2015,prostate,,Sowalsky,153,PRAD,0.733968735,both
+V32_S1,211724,Male,white,,2018,62,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,149,PRAD,0.085668765,both
+V36_S2,211540,Male,white,,2018,66,60-69,1,benign,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2013,prostate,,Sowalsky,167,PRAD,0.518306315,both
+V36_S3,212191,Male,white,,2018,63,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2008,prostate,,Sowalsky,168,PRAD,0.89148134,both
+V32_S6,212319,Male,white,,2018,78,70-79,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2015,prostate,,Sowalsky,154,PRAD,0.682223439,both
+V36_S10,212830,Male,white,,2019,53,50-59,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,172,PRAD,0.998121858,both
+V36_S12,213872,Male,white,,2019,65,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,173,PRAD,0.558524787,both
+V37_S1,217010,Male,white,,2019,54,50-59,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,175,PRAD,0.131469309,both
+V37_S10,218594,Male,white,,2019,66,60-69,1,3+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2009,prostate,,Sowalsky,178,PRAD,0.006153519,both
+V37_S11,219687,Male,white,,2019,71,70-79,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2018,prostate,,Sowalsky,179,PRAD,0.162682727,both
+V37_S12,219763,Male,white,,2019,76,70-79,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2018,prostate,,Sowalsky,180,PRAD,0.630344689,both
+V37_S13,219819,Male,white,,2019,67,60-69,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2014,prostate,,Sowalsky,181,PRAD,0.97891438,both
+V37_S15,221853,Male,white,,2020,70,70-79,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2013,prostate,,Sowalsky,182,PRAD,0.077752672,both
+V37_S16,224099,Male,white,,2020,57,50-59,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2017,prostate,,Sowalsky,183,PRAD,0.182968929,both
+V37_S2,217084,Male,White,,2019,69,60-69,1,3+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2014,prostate,,Sowalsky,,PRAD,NA,left_only
+V37_S3,217220,Male,White,,2019,75,70-79,3,4+3,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2018,prostate,,Sowalsky,,PRAD,NA,left_only
+V37_S4,217473,Male,White,,2019,57,50-59,2,3+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2018,prostate,,Sowalsky,,PRAD,NA,left_only
+V37_S9,218156,Male,White,,2019,66,60-69,1,benign,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,2016,prostate,,Sowalsky,,PRAD,NA,left_only
+V2_S1,CD563387,Male,White,,NA,58,50-59,3,4+4,Cancer,Grade_group,"Adenocarcinoma, NOS",Prostate gland,,prostate_gDNA,,Origene,,PRAD,NA,left_only
+V39_S2,122051,Female,White,"Non-Spanish, Non-His",2010,65,60-69,4,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2009,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S3,123534,Female,White,"Non-Spanish, Non-His",2010,66,60-69,2C,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2010,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S4,124533,Female,White,"Non-Spanish, Non-His",2010,56,50-59,1B,NA,Cancer,Pathologic_stage_group,"Endometrioid adenocarcinoma, NOS                                        ",Ovary,2010,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S5,126057,Female,White,"Non-Spanish, Non-His",2011,71,70-79,1A,NA,Cancer,Pathologic_stage_group,"Endometrioid adenocarcinoma, NOS                                        ",Ovary,2011,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S6,128426,Female,Black,"Non-Spanish, Non-His",2011,36,30-39,2B,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2011,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S8,138483,Female,White,"Non-Spanish, Non-His",2014,69,60-69,4,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2014,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S9,143375,Female,White,"Non-Spanish, Non-His",2015,53,50-59,1A,NA,Cancer,Pathologic_stage_group,"Endometrioid adenocarcinoma, NOS                                        ",Ovary,2015,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S10,144260,Female,White,"Non-Spanish, Non-His",2015,59,50-59,1C,NA,Cancer,Pathologic_stage_group,"Endometrioid adenocarcinoma, NOS                                        ",Ovary,2015,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S11,148364,Female,White,"Non-Spanish, Non-His",2016,67,60-69,NA,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2016,ovary,,Fox Chase,,OVAR,NA,left_only
+V39_S12,149033,Female,White,"Non-Spanish, Non-His",2017,63,60-69,2A,NA,Cancer,Pathologic_stage_group,"Serous cystadenocarcinoma, NOS (C56.9)                                  ",Ovary,2017,ovary,,Fox Chase,,OVAR,NA,left_only
+V6_S13,22-001953,Male,White,Ukraine,2023,56,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,28,normal,0.000661298,both
+V6_S14,22-001954,Male,White,Ukraine,2023,42,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,29,normal,1.04E-05,both
+V6_S15,22-001955,Male,White,Ukraine,2023,44,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,30,normal,0.609260917,both
+V6_S16,22-001956,Male,White,Ukraine,2023,59,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,31,normal,0.000173679,both
+V7_S4,22-001957,Male,White,Ukraine,2023,51,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,34,normal,0.001299043,both
+V7_S5,22-001958,Male,White,Ukraine,2023,50,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,35,normal,0.003362665,both
+V7_S6,22-001959,Female,White,Ukraine,2023,43,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,36,normal,0.530654728,both
+V7_S7,22-001960,Male,White,Ukraine,2023,40,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,37,normal,0,both
+V7_S8,22-001961,Male,White,Ukraine,2023,40,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,38,normal,0.005676632,both
+V7_S9,22-001962,Male,White,Ukraine,2023,43,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,39,normal,0.001039542,both
+V7_S10,22-001963,Male,White,Ukraine,2023,53,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,40,normal,6.53E-06,both
+V7_S11,22-001964,Male,White,Ukraine,2023,62,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,41,normal,0.99972117,both
+V7_S12,22-001965,Male,White,Ukraine,2023,47,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,42,normal,0.132666171,both
+V7_S13,22-001966,Male,White,Ukraine,2023,40,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,43,normal,0.000648668,both
+V7_S14,22-001967,Female,White,Ukraine,2023,50,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,44,normal,1.90E-08,both
+V7_S15,22-001968,Female,White,Ukraine,2023,44,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,45,normal,0.044549022,both
+V7_S16,22-001970,Female,White,Ukraine,2023,59,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,46,normal,0.000153431,both
+V12_S1,22-001977,Female,White,Ukraine,2023,68,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,48,normal,0.210879952,both
+V17_S1,22-001981,Female,White,Ukraine,2023,56,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,83,normal,0.017395387,both
+V12_S3,22-001982,Female,White,Ukraine,2023,40,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,50,normal,6.94024e-05,both
+V12_S2,22-001983,Female,White,Ukraine,2023,58,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,49,normal,0.000434574,both
+V12_S14,22-002362,Male,White,Ukraine,2023,48,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,51,normal,0.014534079,both
+V17_S3,22-002365,Female,White,Ukraine,2023,47,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,85,normal,0,both
+V17_S2,22-002366,Male,White,Ukraine,2023,46,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,84,normal,0.200000003,both
+V13_S3,22-002367,Female,White,Ukraine,2023,48,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,54,normal,0.017477499,both
+V13_S2,22-002368,Male,White,Ukraine,2023,46,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,53,normal,0.003691546,both
+V13_S1,22-002369,Male,White,Ukraine,2023,51,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,52,normal,0.006903806,both
+V13_S10,22-002370,Male,White,Ukraine,2023,52,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,59,normal,0.325986743,both
+V13_S8,22-002371,Female,White,Ukraine,2023,43,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,57,normal,0.829485238,both
+V13_S9,22-002372,Male,White,Ukraine,2023,56,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,58,normal,0.197890699,both
+V17_S5,22-002373,Female,White,Ukraine,2023,49,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,86,normal,0,both
+V17_S16,22-002375,Male,White,Ukraine,2023,49,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,88,normal,0,both
+V17_S19,22-002379,Female,White,Ukraine,2023,65,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,90,normal,0,both
+V17_S18,22-002380,Female,White,Ukraine,2023,56,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,Audubon,89,normal,0,both
+V32_S7,NH_1,Male,Asian,,2025,71,70-79,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,155,normal,0.600000024,both
+V32_S8,NH_2,Male,White,,2025,57,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,156,normal,0.002925862,both
+V32_S9,NH_3,Male,White,,2025,36,30-39,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,157,normal,0,both
+V32_S10,NH_4,Male,Asian,,2025,50,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,158,normal,0.200000003,both
+V32_S11,NH_5,Male,White,,2025,36,30-39,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,159,normal,0,both
+V32_S12,NH_6,Male,White,,2025,23,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,160,normal,0,both
+V34_S2,NH_8,Female,Black,,2025,38,30-39,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,161,normal,0.004225654,both
+V34_S5,NH_11,Female,White,,2025,66,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,162,normal,0,both
+V34_S6,NH_12,Male,White,,2025,47,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,163,normal,0.165969923,both
+V34_S8,NH_14,Female,White,,2025,52,50-59,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,164,normal,0.002222222,both
+V34_S10,NH_16,Male,White,,2025,28,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,165,normal,0,both
+V36_S5,NH_19,Female,White,,2025,46,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,169,normal,0,both
+V36_S6,NH_20,Female,Asian,,2025,24,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,170,normal,0.000988315,both
+V36_S7,NH_21,Female,White,,2025,24,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,171,normal,0,both
+V36_S13,NH_23,Male,Asian,,2025,47,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,174,normal,0,both
+V37_S6,NH_28,Female,Asian,,2025,24,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,176,normal,0,both
+V37_S8,NH_30,Female,White,,2025,73,70-79,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,177,normal,0,both
+V34_S1,NH_7,Male,White,,2025,75,70-79,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V34_S3,NH_9,Male,White,,2025,68,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V34_S4,NH_10,Female,Asian,,2025,32,30-39,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V34_S7,NH_13,Male,Black,,2025,65,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V34_S9,NH_15,Male,White,,2025,76,70-79,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V35_S2,P215948,NA,NA,,NA,NA,NA,Healthy,Healthy,Healthy,,,,,healthyblood,,Sereti lab,NA,normal,NA,left_only
+V36_S7,NH_21,Female,White,,2025,24,20-29,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,171,normal,0,both
+V36_S8,NH_22,Male,White,,2025,71,70-79,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,left_only
+V36_S14,NH_24,Male,White,,2025,42,40-49,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,
+V36_S16,NH_26,Male,White,,2025,62,60-69,Healthy,Healthy,Healthy,,,,,healthyblood,,NIH_Clinical_Center,,normal,NA,
