@@ -68,10 +68,9 @@ _Avoid_: End motif, fragment start motif, 4-mer
 A feature derived from cfDNA read-depth/coverage changes, reflecting chromosomal gains and losses in tumor-derived cfDNA. Processed via cnvkit.
 _Avoid_: CNA (copy number alteration — correct in the paper, but CNV is broader)
 
-### Unknown origin (to be resolved)
-
-**100kb End Bin Features**:
-A set of features derived from fragment-end coverage at 100kb genomic bins. Present in `input/unreviewed/`. Origin and exact computation are not yet documented.
+**100kb Fragment End-Density Profile** (on hold):
+A feature set derived from 5-prime 1bp fragment-end coverage at 100kb bins genome-wide, normalized to counts per million (CPM). Bins were selected by comparing each cancer tissue to healthy controls using a significance + effect-size filter (FDR < 0.05, |delta mean CPM| >= 10), yielding 24 candidate bins (17 tissue-unique, 7 shared). Present in `input/unreviewed/` as `all_samples_selected_100kb_bin_features.tsv` and `all_samples_tissue_unique_100kb_bin_features.tsv`.
+_Avoid_: (on hold pending clarification — the bin selection may have used the same samples intended for classifier training, which would cause data leakage)
 
 **Risk Score**:
 A per-sample score in `metadata_riskscores_all.csv`. Origin is not yet documented.
