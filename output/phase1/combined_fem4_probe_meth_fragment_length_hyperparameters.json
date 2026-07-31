@@ -1,0 +1,41 @@
+{
+  "modality": "combined",
+  "label": "Combined (fem4+probe_meth+fragment_length)",
+  "timestamp": "2026-07-31T04:46:00.539905",
+  "modalities": [
+    "fem4",
+    "probe_meth",
+    "fragment_length"
+  ],
+  "n_splits": 5,
+  "max_retries": 0,
+  "C_grid": [
+    0.001,
+    0.006309573444801929,
+    0.039810717055349734,
+    0.25118864315095824,
+    1.584893192461114,
+    10.0
+  ],
+  "median_C": 10.0,
+  "per_fold_C": [
+    10.0,
+    10.0,
+    10.0,
+    10.0,
+    10.0
+  ],
+  "macro_f1_mean": 0.6329375689669807,
+  "macro_f1_std": 0.04354786869981326,
+  "n_samples": 164,
+  "n_features": 772,
+  "n_features_per_modality": {
+    "fem4": 256,
+    "probe_meth": 148,
+    "fragment_length": 368
+  },
+  "n_nonzero_coef": 731,
+  "random_state": 42,
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv_strategy": "StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)"
+}

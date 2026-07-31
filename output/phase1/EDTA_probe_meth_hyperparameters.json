@@ -1,0 +1,33 @@
+{
+  "modality": "probe_meth",
+  "label": "EDTA Methylation (probe-avg)",
+  "timestamp": "2026-07-31T04:42:16.166120",
+  "n_splits": 5,
+  "max_retries": 0,
+  "C_grid": [
+    0.001,
+    0.006309573444801929,
+    0.039810717055349734,
+    0.25118864315095824,
+    1.584893192461114,
+    10.0
+  ],
+  "median_C": 10.0,
+  "per_fold_C": [
+    10.0,
+    10.0,
+    10.0,
+    10.0,
+    10.0
+  ],
+  "macro_f1_mean": 0.4525371092615675,
+  "macro_f1_std": 0.08871505729289592,
+  "n_samples": 96,
+  "n_features": 148,
+  "n_pcs": null,
+  "n_nonzero_coef": 145,
+  "random_state": 42,
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv_strategy": "StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)",
+  "high_dim": false
+}

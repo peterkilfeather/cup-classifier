@@ -1,0 +1,33 @@
+{
+  "modality": "end_density",
+  "label": "End density (31K bins->PCs)",
+  "timestamp": "2026-07-31T04:28:23.859436",
+  "n_splits": 5,
+  "max_retries": 0,
+  "C_grid": [
+    0.001,
+    0.006309573444801929,
+    0.039810717055349734,
+    0.25118864315095824,
+    1.584893192461114,
+    10.0
+  ],
+  "median_C": 0.25118864315095824,
+  "per_fold_C": [
+    0.25118864315095824,
+    1.584893192461114,
+    1.584893192461114,
+    0.25118864315095824,
+    0.25118864315095824
+  ],
+  "macro_f1_mean": 0.4149266474266475,
+  "macro_f1_std": 0.0998836442849063,
+  "n_samples": 164,
+  "n_features": 30971,
+  "n_pcs": 20,
+  "n_nonzero_coef": 20,
+  "random_state": 42,
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv_strategy": "StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)",
+  "high_dim": true
+}

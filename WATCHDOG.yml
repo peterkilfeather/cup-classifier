@@ -1,0 +1,8 @@
+advisors:
+  - name: default
+    tools:
+      - read
+      - glob
+      - grep
+      - inspect_image
+      - web_search

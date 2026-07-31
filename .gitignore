@@ -7,4 +7,6 @@ input/methylation/probe_cpg/all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_f
 __pycache__/
 
 # PERMANOVA intermediate files (regenerated per run)
+# PERMANOVA intermediate files (regenerated per run)
 output/diagnostic-protocol/.tmp/
+output/diagnostic-protocol/tmp/

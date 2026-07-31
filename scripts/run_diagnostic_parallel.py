@@ -286,8 +286,8 @@ def run_single_classifier(X, y):
     y_enc = le.fit_transform(y)
     Xs = StandardScaler().fit_transform(X)
 
-    clf = LogisticRegression(penalty='l1', solver='saga', max_iter=5000,
-                             random_state=42, class_weight='balanced', n_jobs=1)
+    clf = LogisticRegression(l1_ratio=1, solver='saga', max_iter=5000,
+                             random_state=42, class_weight='balanced')
     param_grid = {'C': np.logspace(-3, 1, 6)}
 
     n_splits = min(5, np.min(np.bincount(y_enc)))
@@ -307,7 +307,7 @@ def run_single_classifier(X, y):
             gs.fit(X_tr, y_tr)
         else:
             inner_cv = StratifiedKFold(n_splits=inner_n, shuffle=True, random_state=42)
-            gs = GridSearchCV(clf, param_grid, cv=inner_cv, scoring='f1_macro', n_jobs=1)
+            gs = GridSearchCV(clf, param_grid, cv=inner_cv, scoring='f1_macro')
             gs.fit(X_tr, y_tr)
             gs = gs.best_estimator_
 
@@ -318,7 +318,7 @@ def run_single_classifier(X, y):
 
 def _fallback_classifier(X, y):
     X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    clf = LogisticRegression(penalty='l1', solver='saga', max_iter=5000,
+    clf = LogisticRegression(l1_ratio=1, solver='saga', max_iter=5000,
                              C=0.1, random_state=42, class_weight='balanced')
     clf.fit(X_tr, y_tr)
     y_pred = clf.predict(X_te)

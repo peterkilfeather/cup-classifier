@@ -1,0 +1,33 @@
+{
+  "modality": "fragment_length",
+  "label": "Fragment length (369)",
+  "timestamp": "2026-07-31T04:41:24.783658",
+  "n_splits": 5,
+  "max_retries": 0,
+  "C_grid": [
+    0.001,
+    0.006309573444801929,
+    0.039810717055349734,
+    0.25118864315095824,
+    1.584893192461114,
+    10.0
+  ],
+  "median_C": 1.584893192461114,
+  "per_fold_C": [
+    1.584893192461114,
+    10.0,
+    1.584893192461114,
+    1.584893192461114,
+    10.0
+  ],
+  "macro_f1_mean": 0.4591420779656074,
+  "macro_f1_std": 0.10207313781248262,
+  "n_samples": 164,
+  "n_features": 368,
+  "n_pcs": null,
+  "n_nonzero_coef": 199,
+  "random_state": 42,
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv_strategy": "StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)",
+  "high_dim": false
+}
