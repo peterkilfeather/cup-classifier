@@ -127,7 +127,7 @@ This document records every data quality issue identified, the decision made, an
 |--------|-------|---------|
 | healthyblood | 40 | Audubon (27), NIH Clinical Center (13) |
 | prostate | 38 | Fox Chase (18), Sowalsky (20) |
-| liver | 24 | Fox Chase (12), Audubon (12) |
+| liver | 24 | Fox Chase (15), Audubon (9) |
 | colon | 22 | Fox Chase (22) |
 | stomach | 21 | Fox Chase (11), Audubon (10) |
 | pancreas | 19 | Fox Chase (19) |
