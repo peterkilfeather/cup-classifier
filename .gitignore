@@ -2,3 +2,9 @@
 # Per-CpG enriched methylation data — too large for GitHub
 input/methylation/probe_cpg/all_samples.probe_cpg_enriched_filtered.mNonCpGlt4.long.tsv
 input/methylation/probe_cpg/all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_frac.wide.tsv
+
+# Python cache
+__pycache__/
+
+# PERMANOVA intermediate files (regenerated per run)
+output/diagnostic-protocol/.tmp/
