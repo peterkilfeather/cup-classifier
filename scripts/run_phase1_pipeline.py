@@ -119,13 +119,23 @@ PCA_N_COMPONENTS = N_PCS
 def pca_fit_transform(X_tr, X_te=None):
     """Impute NaN, scale, PCA-fit on training, transform training (and test).
 
-    Returns
-    -------
-    X_tr_pc : ndarray
-    X_te_pc : ndarray (only if X_te given)
-    pca : PCA object
-    scaler : StandardScaler used before PCA
-    k : int, number of components
+    NaN imputation uses training column means (no leakage). PCA is fit on
+    training data only. Number of components = min(N_PCS, n_samples, n_features).
+
+    Returns (dual arity based on X_te)
+    -----------------------------------
+    If X_te is None:
+        X_tr_pc : ndarray (n_tr_samples, k)  — PCA-reduced training data
+        pca : PCA object                      — fitted PCA
+        scaler : StandardScaler               — fitted scaler
+        k : int                               — number of components
+
+    If X_te is not None:
+        X_tr_pc : ndarray (n_tr_samples, k)  — PCA-reduced training data
+        X_te_pc : ndarray (n_te_samples, k)  — PCA-reduced test data
+        pca : PCA object                      — fitted PCA
+        scaler : StandardScaler               — fitted scaler
+        k : int                               — number of components
     """
     # Impute training NaN using training column means
     with warnings.catch_warnings():
@@ -169,10 +179,26 @@ def _impute_with_mean(X, col_mean):
 # ── Inner CV: C tuning ────────────────────────────────
 
 def tune_C(X_tr, y_tr, random_state=RANDOM_STATE):
-    """Inner GridSearchCV for L1 penalty C.
+    """Tune L1 penalty C via inner GridSearchCV, return fitted model.
 
-    Inner CV splits: StratifiedKFold(n_splits=min(3, min_class_count)).
-    Returns best estimator.
+    Falls back to C=0.1 without grid search when min class count < 2.
+    Grid: C_GRID (np.logspace(-3, 1, 6)).
+    Inner CV: StratifiedKFold(n_splits=min(3, min_class_count)).
+
+    Parameters
+    ----------
+    X_tr : ndarray (n_train, n_features)
+        Training features, already scaled.
+    y_tr : ndarray (n_train,)
+        Training labels, already encoded.
+    random_state : int
+        Seed for inner CV shuffling.
+
+    Returns
+    -------
+    LogisticRegression
+        Fitted best estimator (tuned C + fit on full X_tr).
+        Access selected C via `.C`.
     """
     n_inner = min(3, np.min(np.bincount(y_tr)))
     if n_inner < 2:
@@ -485,7 +511,24 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
 # ── Plots ─────────────────────────────────────────────
 
 def _plot_cv_results(metrics_df, label, tag, chance):
-    """Per-fold macro-F1 with mean line and per-source accuracy."""
+    """Per-fold macro-F1 bar chart (left) + per-source accuracy grouped bars (right).
+
+    Parameters
+    ----------
+    metrics_df : pd.DataFrame
+        With columns: fold, macro_f1, balanced_accuracy, accuracy,
+        src_acc_<SourceName> for each source present.
+    label : str
+        Modality label for plot title (e.g. 'FEM4 (256)').
+    tag : str
+        File-safe tag for output filename.
+    chance : float
+        Chance-level baseline (e.g. 1/6 for 6 classes).
+
+    Saves
+    -----
+    {FIGS}/{tag}_cv_results.png
+    """
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
 
     # Left: macro-F1 per fold
@@ -533,7 +576,26 @@ def _plot_cv_results(metrics_df, label, tag, chance):
 
 
 def _plot_coefficient_heatmap(model, feat_names, classes, label, tag):
-    """Heatmap of non-zero L1 coefficients per class."""
+    """Heatmap of non-zero L1 coefficients per class (top 30 features).
+
+    Parameters
+    ----------
+    model : LogisticRegression
+        Fitted model with .coef_ attribute (n_classes, n_features).
+    feat_names : ndarray or None
+        Feature names for x-axis labels. Falls back to indices if None.
+    classes : ndarray
+        Class labels for y-axis.
+    label : str
+        Modality label for plot title.
+    tag : str
+        File-safe tag for output filename.
+
+    Saves
+    -----
+    {FIGS}/{tag}_coefficients.png
+    Skips if all coefficients are zero.
+    """
     coef = model.coef_  # (n_classes, n_features)
     non_zero = np.any(coef != 0, axis=0)
     if non_zero.sum() == 0:
@@ -809,7 +871,25 @@ def run_combined_pipeline(mod_names, meta, label_prefix=''):
 # ── Summary table ─────────────────────────────────────
 
 def build_summary(all_results):
-    """Build combined summary DataFrame across modalities."""
+    """Aggregate per-modality results into a summary DataFrame.
+
+    Infers scope ('Full' / 'EDTA') from label prefix. Skips None results
+    (failed modalities). For high-dim modalities, reports PCA components
+    as total_features and n_original_features as additional column.
+
+    Parameters
+    ----------
+    all_results : list of dict or None
+        Each result dict from run_modality_pipeline() or run_combined_pipeline().
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns: Scope, Modality, macro_F1_mean, macro_F1_std,
+        macro_F1_CI95_lower, macro_F1_CI95_upper, median_C,
+        selected_features, total_features.
+        Additional column n_original_features for high-dim modalities.
+    """
     rows = []
     for r in all_results:
         if r is None:

@@ -37,3 +37,19 @@ Running PERMANOVA with covariates in different orders to bracket shared variance
 
 ## CRM (Cramer's V)
 A measure of association between categorical variables, ranging 0 (independent) to 1 (perfect correlation). Chi-square-based, analogous to Pearson correlation for categories.
+
+---
+
+# Phase 1 Pipeline Glossary
+
+## Source-stratified CV
+A cross-validation strategy that splits data by tissue class (StratifiedKFold) and then verifies that every training fold contains all sources present in the dataset. If a fold is missing a source, the split is rejected and re-shuffled (up to 100 retries). Prevents the classifier from learning source-specific artifacts rather than biological tissue signal.
+
+## L1-penalized logistic regression (multinomial)
+A multiclass logistic regression with L1 (lasso) regularization, which drives irrelevant feature coefficients to zero — performing implicit feature selection. Used with `solver='saga'` (the only solver supporting L1 + multinomial in scikit-learn). The `C` parameter controls regularization strength (lower = stronger). Tuned via inner GridSearchCV per fold.
+
+## Per-fold PCA
+Principal Component Analysis fit on training data only, then applied to transform both training and test sets. Prevents data leakage that would occur if PCA were fit on the full dataset before cross-validation. Used for high-dimensional modalities (per-CpG methylation with ~32K features, end density with ~31K bins). K=20 fixed components (not elbow-selected).
+
+## Imputation inside CV
+Replacing missing values (NaNs) using column means computed from the training set only, then applying those same means to the test set. Contrast with pre-CV imputation, which would leak test-set statistics into training. Used for low-dimensional modalities (FEM4, probe-averaged methylation, fragment length) that may have sporadic missing values.
