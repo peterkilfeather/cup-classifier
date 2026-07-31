@@ -1,0 +1,7 @@
+Modality,R2_Tissue,R2_BCT,R2_Source,F1_Tissue,F1_BCT,F1_Source,Chance,0.8xF1_Tissue,BCT_Verdict,Source_Verdict,VP_Tissue,VP_BCT
+Methylation (probe-avg),0.1933,0,0.0555,0.4245,0,0.7004,0.1576,0.3396,Weak,Borderline,0.1925,0.0
+FEM4 (256),0.1779,0,0.0949,0.738,0,0.7906,0.2263,0.5904,Weak,Borderline,0.1907,0.0
+CNVkit thr0.10,0.1053,0,0.0413,0.3427,0,0.5244,0.2552,0.2742,Weak,Borderline,0.1052,0.0
+Per-CpG methylation (32K->PCs),0.1007,0,0.0388,0.3459,0,0.388,0.1391,0.2767,Weak,Borderline,0.1022,0.0
+End density (31K bins->PCs),0.1046,0,0.049,0.4597,0,0.7215,0.1081,0.3678,Weak,Borderline,0.1246,0.0
+Fragment length (369),0.2145,0,0.091,0.5002,0,0.6908,0.1604,0.4001,Weak,Borderline,0.2157,0.0

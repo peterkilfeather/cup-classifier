@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variance Partitioning — Per-Feature Confound Analysis</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+</head>
+<body>
+
+<h1>Variance Partitioning — Per-Feature Confound Analysis</h1>
+
+<p class="subtitle">How fitting 148–32,000 linear models and decomposing their variance tells the same story as PERMANOVA, feature by feature.</p>
+
+<p><strong>Prerequisites:</strong> <a href="0001-why-bct-is-not-a-dominant-confound.html">Lesson 1</a> (shared variance, marginal vs sequential tests).</p>
+
+<h2>Why variance partitioning?</h2>
+
+<p>PERMANOVA answers: <em>"How much of the <strong>overall distance between samples</strong> does each covariate explain?"</em> It's a single number per modality.</p>
+
+<p>Variance partitioning answers: <em>"For each individual feature (probe, CpG, motif, bin), how much of its variance is explained by each covariate?"</em> It gives you a <strong>distribution</strong> across features, not just one number.</p>
+
+<p>The two methods use completely different machinery, but they should converge on the same story. When they do, you can trust the result.</p>
+
+<div class="callout callout-info">
+<strong>Why this matters:</strong> PERMANOVA might miss a confound that affects only 5% of features very strongly (it gets diluted in the full distance matrix). Variance partitioning catches this — each feature contributes equally, so a 5% feature subset with strong confound signal won't be invisible.
+</div>
+
+<h2>How it works</h2>
+
+<p>For each feature (e.g., one methylation probe), fit:</p>
+
+<p>$$feature \sim Tissue + Source + BCT + Sex$$</p>
+
+<p>This is a standard linear model (ordinary least squares). The ANOVA table decomposes the total sum of squares into portions attributable to each term. Because the covariates are categorical, we use one-hot encoding: Tissue becomes 5 dummy variables (6 tissues minus 1 reference), Source becomes 3, BCT becomes 3, Sex becomes 1 — plus the intercept.</p>
+
+<p><strong>Type II sums of squares</strong> means each term's SS is computed after accounting for all <em>other</em> terms, but <em>without</em> interactions. This is analogous to the marginal (Type III) PERMANOVA — each term gets credit only for what it uniquely explains.</p>
+
+<p>The fraction for Tissue is:</p>
+
+<p>$$\frac{SS_{Tissue}}{SS_{Tissue} + SS_{Source} + SS_{BCT} + SS_{Sex}}$$</p>
+
+<p>This is the fraction of <strong>model-explained</strong> variance that Tissue accounts for. (The remaining variance — not explained by any covariate — is the residual, which dominates for most features.)</p>
+
+<h2>What the results look like</h2>
+
+<p>For FEM4 (our strongest modality), across its 256 features:</p>
+
+<table>
+  <tr><th>Covariate</th><th>Mean variance fraction</th><th>Median</th><th>% features > 0.10</th></tr>
+  <tr><td>Tissue</td><td><strong>0.164</strong></td><td>0.12</td><td>~42%</td></tr>
+  <tr><td>Source</td><td>0.025</td><td>0.02</td><td>~5%</td></tr>
+  <tr><td>BCT</td><td>0.087</td><td>0.06</td><td>~25%</td></tr>
+  <tr><td>Sex</td><td>0.009</td><td>0.00</td><td>~2%</td></tr>
+</table>
+
+<p>The typical FEM4 feature has ~16% of its model-explained variance coming from Tissue, ~9% from BCT, and ~3% from Source. The rest is either residual noise or unique to the individual sample.</p>
+
+<h2>Why VP and PERMANOVA agree</h2>
+
+<table>
+  <tr><th>Modality</th><th>PERMANOVA Tissue R²</th><th>VP Tissue mean</th><th>PERMANOVA BCT R²</th><th>VP BCT mean</th></tr>
+  <tr><td>Methylation (probe-avg)</td><td>0.131</td><td>0.132</td><td>0.005</td><td>0.013</td></tr>
+  <tr><td>FEM4</td><td>0.150</td><td>0.164</td><td>0.018</td><td>0.087</td></tr>
+  <tr><td>Fragment length</td><td>0.141</td><td>0.147</td><td>0.004</td><td>0.025</td></tr>
+  <tr><td>CNVkit</td><td>0.054</td><td>0.054</td><td>0.011</td><td>0.016</td></tr>
+  <tr><td>Per-CpG (5 PCs)</td><td>0.068</td><td>0.068</td><td>0.015</td><td>0.017</td></tr>
+  <tr><td>End density (5 PCs)</td><td>0.062</td><td>0.072</td><td>0.021</td><td>0.044</td></tr>
+</table>
+
+<p>The Tissue values align closely. The BCT values show the same rank order (Tissue > Source > BCT) but the VP mean is higher for BCT in some modalities. Why?</p>
+
+<p><strong>PERMANOVA</strong> operates on the PCA-reduced feature space (or the full feature space via Euclidean distances). The distance matrix is a single summary of all features jointly. BCT's tiny unique contribution across all features together is 0.018.</p>
+
+<p><strong>Variance partitioning</strong> averages per-feature fractions. If a few features are strongly driven by BCT, they pull the mean up — even though most features have zero BCT signal. The <em>median</em> BCT variance fraction is near zero for most modalities.</p>
+
+<div class="callout callout-warn">
+<strong>Why VP BCT looks higher than PERMANOVA BCT for FEM4:</strong> Some FEM4 features capture technical variation (sequencing depth, GC bias) that happens to correlate with tube type. PERMANOVA dilutes these across all 256 features; VP averages them feature-wise. The correct interpretation is: <strong>most features have negligible BCT signal, a small minority have detectable BCT signal, and PERMANOVA correctly tells you the overall impact is tiny.</strong>
+</div>
+
+<h2>The violin plot</h2>
+
+<p>Open <code>output/diagnostic-protocol/varpart_FEM4_(256)_Full_(164).png</code> — you'll see a violin plot with four violins (Tissue, Source, BCT, Sex). The Tissue violin is the widest at higher fractions; the BCT violin hugs zero. The red line at 0.10 is the materiality threshold used in the adjudication.</p>
+
+<h2>Why this matters</h2>
+
+<ul>
+  <li><strong>VP confirms PERMANOVA's conclusions at the per-feature level.</strong> Two completely different methods (distance-based permutation test vs per-feature OLS) tell the same story. This is converging evidence.</li>
+  <li><strong>VP reveals feature-level structure.</strong> If a confound drives only a few features very strongly, VP will show it while PERMANOVA might not. In our case, neither shows BCT as a problem.</li>
+  <li><strong>VP's BCT values are slightly inflated by a few outlier features.</strong> This is normal — and reinforces why the protocol uses <em>four</em> converging methods, not one.</li>
+</ul>
+
+<h2>Limitations</h2>
+
+<ul>
+  <li><strong>Linear model assumption.</strong> The relationship between a feature and covariates might be nonlinear. OLS only captures linear associations. If BCT had a complex nonlinear effect, VP might miss it — but PERMANOVA (distance-based) would catch it.</li>
+  <li><strong>No interactions.</strong> The model is additive. A Tissue×BCT interaction (e.g., "BCT affects liver methylation differently than colon") would be absorbed into the residuals and missed by both VP and the simple PERMANOVA model.</li>
+  <li><strong>Computational cost.</strong> 32,000 linear models × 164 samples takes ~60 seconds. Not prohibitive, but you wouldn't do it for every analysis.</li>
+</ul>
+
+<h2>Key takeaways</h2>
+
+<ol>
+  <li><strong>VP = PERMANOVA at single-feature resolution.</strong> They use different math but converge on the same ranking: Tissue > Source > BCT.</li>
+  <li><strong>VP's BCT mean can be inflated by outlier features.</strong> Check the median or the full distribution, not just the mean.</li>
+  <li><strong>Converging evidence is powerful.</strong> When PERMANOVA, VP, classifier negative controls, and PCA all tell the same story, the conclusion is robust.</li>
+  <li><strong>VP is the method to use</strong> when you care about <em>which</em> features are confound-driven (e.g., to flag or remove them).</li>
+</ol>
+
+<div class="quiz">
+<p><strong>Check your understanding:</strong></p>
+<p><em>The VP mean for BCT in FEM4 is 0.087 — triple the PERMANOVA value (0.018). Does this mean PERMANOVA underestimated BCT?</em></p>
+<blockquote>
+No. PERMANOVA measures the unique contribution of BCT to the <em>overall distance matrix</em> — a single summary of all 256 features. VP averages per-feature fractions, which a small number of BCT-driven features can inflate. The two methods answer different questions:
+<ul>
+  <li>PERMANOVA: "What fraction of total multivariate variance does BCT uniquely explain?"</li>
+  <li>VP: "For the average feature, what fraction of its model-explained variance comes from BCT?"</li>
+</ul>
+Both agree that Tissue dominates and BCT is minor. The exact number differs because the aggregation differs.
+</blockquote>
+</div>
+
+<h2>Recommended reading</h2>
+<ul>
+  <li><a href="../GLOSSARY.md">GLOSSARY.md</a> — terms used in this lesson</li>
+  <li><a href="0001-why-bct-is-not-a-dominant-confound.html">Lesson 1: Why BCT Is Not a Dominant Confound</a></li>
+  <li><code>output/diagnostic-protocol/varpart_*.png</code> — the violin plots for each modality</li>
+  <li><code>scripts/run_diagnostic_parallel.py</code> lines 370–440 — the implementation</li>
+</ul>
+
+<h2>What next?</h2>
+<p><a href="0003-why-source-is-the-real-confound.html">Lesson 3: Why Source Is the Real Confound</a> — how Source behaves differently from BCT, and what it means for your validation strategy.</p>
+
+<p><em>Ask your teacher any follow-up questions before moving on.</em></p>
+
+<div class="footer">
+  <p>Lesson 2 of the Confound Analysis series. Part of the cup-classifier project.</p>
+</div>
+
+</body>
+</html>

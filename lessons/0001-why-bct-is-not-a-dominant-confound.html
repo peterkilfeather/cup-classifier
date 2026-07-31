@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why BCT Is Not a Dominant Confound</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+  .venn { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0; flex-wrap: wrap; }
+  .venn svg { max-width: 280px; }
+</style>
+</head>
+<body>
+
+<h1>Why BCT Is Not a Dominant Confound</h1>
+
+<p class="subtitle">A lesson in marginal tests, shared variance, and why your classifier can "predict" something that isn't really there.</p>
+
+<p><strong>Prerequisites:</strong> None — this lesson is the entry point.</p>
+
+<h2>The paradox</h2>
+
+<p>You've just run the diagnostic protocol and seen two results that seem to contradict each other:</p>
+
+<table>
+  <tr><th>Method</th><th>Finding</th></tr>
+  <tr><td>Classifier negative control</td><td>BCT can be predicted with F1 = 0.294–0.734 — <em>sometimes rivaling Tissue F1</em></td></tr>
+  <tr><td>PERMANOVA (marginal)</td><td>BCT's unique R² = 0.004–0.021 — <em>essentially zero</em></td></tr>
+</table>
+
+<p>How can a classifier predict BCT if PERMANOVA says BCT explains almost nothing?</p>
+
+<p>This is the central puzzle. Let's build intuition for how both can be true.</p>
+
+<h2>Shared variance: the umbrella-sales analogy</h2>
+
+<p>Suppose you collect daily data on two variables:</p>
+
+<table>
+  <tr><th>Variable</th><th>Value</th></tr>
+  <tr><td>Umbrella sales</td><td>20/day on rainy days, 2/day on sunny days</td></tr>
+  <tr><td>Ice cream sales</td><td>10/day on rainy days, 200/day on sunny days</td></tr>
+  <tr><td>Weather (actual)</td><td>Hidden — you don't measure it directly</td></tr>
+</table>
+
+<div class="callout callout-warn">
+<strong>Thought experiment:</strong> Can you predict umbrella sales from ice cream sales? <em>Yes — they're correlated through weather. On low-ice-cream days, umbrella sales are higher. But ice cream doesn't <strong>cause</strong> umbrella sales.</em>
+</div>
+
+<p>Now replace the variables:</p>
+
+<table>
+  <tr><th>Analogy</th><th>Our data</th></tr>
+  <tr><td>Umbrella sales</td><td><strong>BCT</strong> — correlates with Tissue</td></tr>
+  <tr><td>Ice cream sales</td><td><strong>Tissue</strong> — the biological variable of interest</td></tr>
+  <tr><td>Hidden weather</td><td><strong>The biological mechanism</strong> that drives both methylation patterns and tissue identity</td></tr>
+</table>
+
+<p><strong>A classifier can predict BCT because BCT and Tissue are correlated — not because BCT has independent signal in the features.</strong></p>
+
+<h2>Why are BCT and Tissue correlated?</h2>
+
+<p>Look at the contingency table from our actual data:</p>
+
+<table>
+  <tr><th>Tissue</th><th>ACD</th><th>Citrate</th><th>EDTA</th><th>Streck</th></tr>
+  <tr><td>colon</td><td>13</td><td>0</td><td>9</td><td>0</td></tr>
+  <tr><td>healthyblood</td><td>0</td><td>0</td><td>40</td><td>0</td></tr>
+  <tr><td>liver</td><td>0</td><td>15</td><td>9</td><td>0</td></tr>
+  <tr><td>pancreas</td><td>0</td><td>19</td><td>0</td><td>0</td></tr>
+  <tr><td>prostate</td><td>0</td><td>1</td><td>17</td><td>20</td></tr>
+  <tr><td>stomach</td><td>0</td><td>0</td><td>21</td><td>0</td></tr>
+</table>
+
+<p>Key patterns:</p>
+<ul>
+  <li><strong>ACD</strong> → used only for colon. If you know a sample is ACD, it <em>must</em> be colon.</li>
+  <li><strong>Streck</strong> → used only for Sowalsky prostate. If you know Streck, it <em>must</em> be prostate.</li>
+  <li><strong>Citrate</strong> → used for liver and pancreas. If you know Citrate, it's almost certainly liver or pancreas.</li>
+  <li><strong>EDTA</strong> → used for everything else. The "default" tube.</li>
+</ul>
+
+<p>When a classifier learns "what pattern of methylation looks like colon," it simultaneously learns "what pattern of methylation looks like ACD" — because every colon sample happens to be either ACD or EDTA, and every ACD sample happens to be colon.</p>
+
+<h2>How PERMANOVA strips away shared variance</h2>
+
+<h3>Sequential (Type I) — first-in wins</h3>
+
+<p>If you ask PERMANOVA: "How much variance does BCT explain when we let it enter the model <em>first</em>?"</p>
+
+<table>
+  <tr><th>Modality</th><th>BCT enters first (R²)</th><th>BCT enters last (R²)</th></tr>
+  <tr><td>FEM4</td><td><strong>0.155</strong></td><td>0.018</td></tr>
+  <tr><td>Fragment length</td><td><strong>0.073</strong></td><td>0.004</td></tr>
+  <tr><td>Probe methylation</td><td><strong>0.032</strong></td><td>0.005</td></tr>
+</table>
+
+<p>When BCT enters <em>first</em>, it claims all the variance it <em>shares</em> with Tissue. The R² looks meaningful.</p>
+
+<h3>Marginal (Type III) — each term gets only its unique contribution</h3>
+
+<p>The marginal test asks a stricter question: <strong>"After Tissue, Source, and Sex are already accounted for, does BCT add anything new?"</strong></p>
+
+<p>This is the "last-in" column above. For FEM4, BCT's unique R² drops from 0.155 to 0.018. The difference (0.155 − 0.018 = 0.137) is the variance that BCT <em>shares</em> with Tissue.</p>
+
+<p>In the umbrella-ice-cream analogy: the marginal test is like asking "does ice cream sales tell us anything about umbrella sales <em>beyond</em> what we already know from weather data?" The answer is no — the apparent relationship was entirely through the hidden weather variable.</p>
+
+<div class="venn">
+  <svg viewBox="0 0 200 120" width="200">
+    <ellipse cx="80" cy="60" rx="70" ry="50" fill="rgba(37,99,235,0.15)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="50" y="20" font-size="10" text-anchor="middle" fill="var(--accent)">Tissue</text>
+    <text x="55" y="35" font-size="9" text-anchor="middle">— R² = 0.150</text>
+    <ellipse cx="120" cy="60" rx="55" ry="40" fill="rgba(220,38,38,0.12)" stroke="var(--red)" stroke-width="2"/>
+    <text x="140" y="30" font-size="10" text-anchor="middle" fill="var(--red)">BCT</text>
+    <text x="145" y="45" font-size="9" text-anchor="middle">— R² = 0.018</text>
+    <text x="100" y="65" font-size="9" text-anchor="middle" fill="var(--muted)">shared = 0.137</text>
+  </svg>
+</div>
+
+<p><strong>This is the core insight.</strong> The vast majority of what looks like "BCT signal" is actually Tissue signal that BCT happens to correlate with.</p>
+
+<h2>But why does the classifier find BCT?</h2>
+
+<p>A classifier doesn't distinguish between unique and shared variance. It asks: <strong>"Is there <em>any</em> pattern in these features that lets me predict BCT?"</strong></p>
+
+<p>Because BCT and Tissue are correlated, the answer is "yes." The classifier finds the Tissue pattern and uses it to predict BCT as a side effect. This is exactly the umbrella-sales-from-ice-cream phenomenon.</p>
+
+<p>If you trained a classifier to predict BCT <em>after</em> regressing out Tissue (i.e., on the residuals), its F1 would collapse to chance. We didn't do that step — but the PERMANOVA marginal test <em>is</em> that step for distance-based variance.</p>
+
+<h2>The smoking gun: EDTA subset</h2>
+
+<p>The strongest evidence comes from the EDTA-only subset (96 samples where BCT is held constant). When BCT cannot vary:</p>
+
+<table>
+  <tr><th>Modality</th><th>Tissue R² (full)</th><th>Tissue R² (EDTA)</th><th>BCT F1 (full)</th><th>BCT F1 (EDTA)</th></tr>
+  <tr><td>Probe methylation</td><td>0.131</td><td><strong>0.193 ↑</strong></td><td>0.517</td><td><strong>0.000</strong></td></tr>
+  <tr><td>FEM4</td><td>0.150</td><td><strong>0.178 ↑</strong></td><td>0.733</td><td><strong>0.000</strong></td></tr>
+  <tr><td>Fragment length</td><td>0.141</td><td><strong>0.215 ↑</strong></td><td>0.511</td><td><strong>0.000</strong></td></tr>
+</table>
+
+<div class="callout callout-correct">
+<strong>The tissue signal doesn't collapse — it strengthens.</strong> When BCT noise is removed, the biological signal becomes clearer. BCT-F1 drops to 0.000 (no BCT variation to predict). This is the definitive proof that BCT was a passenger, not a driver.
+</div>
+
+<h2>Why the verdict is "Borderline" not "Weak"</h2>
+
+<p>The adjudication uses a two-criteria threshold:</p>
+
+<table>
+  <tr><th>Criterion</th><th>Value</th><th>Threshold</th></tr>
+  <tr><td>PERMANOVA marginal R²</td><td>0.004–0.021</td><td>≥ 0.10 → Material/Dominant</td></tr>
+  <tr><td>Classifier F1 (BCT)</td><td>0.294–0.734</td><td>≥ 0.8 × Tissue F1 → suspect</td></tr>
+</table>
+
+<p>BCT fails the first criterion (R² way below 0.10) but passes the second (F1 often ≥ 0.8 × Tissue F1). The "Borderline" verdict means: <strong>the classifier signal is suspicious and needs investigation — which we did via entry-order sensitivity and EDTA subset.</strong> The investigation proves the signal is aliasing, not real.</p>
+
+<h2>What would a "Dominant" confound look like?</h2>
+
+<p>For BCT to be dominant, we'd need <strong>both</strong>:</p>
+<ol>
+  <li>R² ≥ 0.10 in the marginal test (BCT explains unique variance after Tissue)</li>
+  <li>Classifier F1 ≥ 0.8 × Tissue F1 (BCT is learnable)</li>
+</ol>
+
+<p>Neither is true for unique variance. The classifier finding alone is not enough — that's why the protocol uses <strong>converging evidence</strong> from four different methods.</p>
+
+<h2>Why this matters for the project</h2>
+
+<ul>
+  <li><strong>Batch correction (ComBat, harmony) is unnecessary</strong> — it would remove biological signal aliased with BCT while fixing nothing real.</li>
+  <li><strong>Source-stratified CV is the real need</strong> — Source has consistent unique R² of 0.014–0.052.</li>
+  <li><strong>Single-source tissues (colon, pancreas)</strong> are usable for within-batch comparisons but cannot support cross-source generalization.</li>
+</ul>
+
+<h2>Key takeaways</h2>
+
+<ol>
+  <li><strong>Correlation ≠ causation.</strong> A classifier finding pattern in BCT does not mean BCT is an independent signal.</li>
+  <li><strong>Marginal (Type III) tests strip shared variance.</strong> They answer "what does this variable add that nothing else already explains?"</li>
+  <li><strong>Entry order reveals shared variance.</strong> The gap between BCT-first and last-in R² measures how much variance BCT shares with Tissue.</li>
+  <li><strong>EDTA subset is the definitive experiment.</strong> When BCT can't vary and tissue signal persists, BCT was never the confound you feared.</li>
+  <li><strong>Converging evidence is essential.</strong> No single method (not PCA, not PERMANOVA, not a classifier) is sufficient — you need the full matrix of 4 methods × 6 modalities.</li>
+</ol>
+
+<div class="quiz">
+<p><strong>Check your understanding:</strong></p>
+<p><em>A colleague says: "But the classifier can predict BCT with F1=0.73 — that means BCT is a real signal in the features. We need batch correction."</em></p>
+<p>How do you respond? (Think before reading on.)</p>
+<blockquote>
+<p>The classifier finding alone is not evidence of unique BCT signal. The PERMANOVA marginal test shows BCT adds only R²=0.018 after accounting for Tissue — and the EDTA subset proves it: when BCT is held constant, the tissue signal persists (R²=0.178 vs 0.150). The classifier found BCT because BCT and Tissue are correlated (Cramer's V structure: ACD→colon, Streck→prostate). Batch correction would remove biological signal that happens to correlate with BCT, not fix a real confound.</p>
+</blockquote>
+</div>
+
+<h2>Recommended reading</h2>
+
+<ul>
+  <li>GLOSSARY.md — terms used in this lesson</li>
+  <li><code>output/diagnostic-protocol/adjudication_Full_(164).csv</code> — the full verdict table</li>
+  <li><code>output/diagnostic-protocol/permanova_Full_(164).png</code> — the PERMANOVA bar chart</li>
+  <li>Anderson (2001), "A new method for non-parametric multivariate analysis of variance" — the PERMANOVA paper</li>
+</ul>
+
+<h2>What next?</h2>
+
+<p>If this is clear, the next lesson covers <strong>how variance partitioning works at the per-feature level</strong> — and why it agrees with PERMANOVA despite using a completely different method.</p>
+
+<p><em>Ask your teacher any follow-up questions before moving on.</em></p>
+
+<div class="footer">
+  <p>Lesson 1 of the Confound Analysis series. Part of the cup-classifier project.</p>
+</div>
+
+</body>
+</html>

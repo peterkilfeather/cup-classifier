@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Source Is the Real Confound</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+</head>
+<body>
+
+<h1>Why Source Is the Real Confound</h1>
+
+<p class="subtitle">BCT was a red herring. The confound you actually need to design around is clinical site (Source). Here's why — and how to handle it.</p>
+
+<p><strong>Prerequisites:</strong> <a href="0001-why-bct-is-not-a-dominant-confound.html">Lesson 1</a> (shared variance, marginal vs sequential tests), <a href="0002-variance-partitioning.html">Lesson 2</a> (variance partitioning).</p>
+
+<h2>The data</h2>
+
+<table>
+  <tr><th>Tissue</th><th>Fox Chase</th><th>Audubon</th><th>Sowalsky</th><th>NIH Clinical Center</th></tr>
+  <tr><td>colon</td><td><strong>22</strong></td><td>0</td><td>0</td><td>0</td></tr>
+  <tr><td>pancreas</td><td><strong>19</strong></td><td>0</td><td>0</td><td>0</td></tr>
+  <tr><td>prostate</td><td>18</td><td>0</td><td><strong>20</strong></td><td>0</td></tr>
+  <tr><td>liver</td><td>15</td><td><strong>9</strong></td><td>0</td><td>0</td></tr>
+  <tr><td>stomach</td><td>11</td><td><strong>10</strong></td><td>0</td><td>0</td></tr>
+  <tr><td>healthyblood</td><td>0</td><td><strong>27</strong></td><td>0</td><td><strong>13</strong></td></tr>
+</table>
+
+<p>The structural problem is clear: colon and pancreas are single-source (Fox Chase only). A classifier could learn "Fox Chase" and correctly classify both tissues for the wrong reason. This is the same aliasing problem BCT had — but Source persists across more analyses.</p>
+
+<h2>How Source differs from BCT</h2>
+
+<p>Both BCT and Source are correlated with Tissue. But the key difference is what happens when you control for the other variables:</p>
+
+<table>
+  <tr><th>Metric</th><th>BCT</th><th>Source</th></tr>
+  <tr><td>Marginal R² (probe meth)</td><td>0.005</td><td><strong>0.029</strong></td></tr>
+  <tr><td>Marginal R² (FEM4)</td><td>0.018</td><td><strong>0.047</strong></td></tr>
+  <tr><td>Marginal R² (frag len)</td><td>0.004</td><td><strong>0.052</strong></td></tr>
+  <tr><td>Persists in EDTA?</td><td>N/A (held constant)</td><td><strong>Yes</strong> (R²=0.056–0.095)</td></tr>
+  <tr><td>Classifier F1 / Tissue F1</td><td>~1.0× (aliased)</td><td><strong>~1.2×</strong> (often exceeds Tissue)</td></tr>
+  <tr><td>Shared with Tissue</td><td>Mostly aliased</td><td>Partial — has independent component</td></tr>
+</table>
+
+<p>Source has roughly <strong>3–10× the unique R² of BCT</strong>. It also <strong>persists in the EDTA subset</strong>, where BCT is held constant. This is critical: Source is not just a proxy for BCT. It represents real technical and biological differences between clinical sites.</p>
+
+<h2>Why Source signal persists in EDTA</h2>
+
+<p>In the EDTA-only subset (96 samples), BCT is constant — so any BCT-related confounding disappears. But Source still varies:</p>
+
+<table>
+  <tr><th>Modality</th><th>Source R² (full)</th><th>Source R² (EDTA)</th><th>Source F1 (full)</th><th>Source F1 (EDTA)</th></tr>
+  <tr><td>Probe methylation</td><td>0.029</td><td><strong>0.056</strong></td><td>0.610</td><td><strong>0.700</strong></td></tr>
+  <tr><td>FEM4</td><td>0.047</td><td><strong>0.095</strong></td><td>0.729</td><td><strong>0.791</strong></td></tr>
+  <tr><td>Fragment length</td><td>0.052</td><td><strong>0.091</strong></td><td>0.596</td><td><strong>0.691</strong></td></tr>
+</table>
+
+<p>Source R² <em>increases</em> in the EDTA subset. This means Source variation is independent of tube type — it's driven by real differences between labs, populations, or processing protocols at different clinical sites.</p>
+
+<div class="callout callout-info">
+<strong>Possible sources of Source signal:</strong>
+<ul>
+  <li><strong>Library preparation.</strong> Different sites may use different reagent lots, thermocyclers, or technicians</li>
+  <li><strong>Sequencing runs.</strong> Fox Chase samples were sequenced in different batches than Audubon</li>
+  <li><strong>Population genetics.</strong> Fox Chase (US) vs Audubon (Ukraine) samples may have systematic ancestry differences affecting cfDNA</li>
+  <li><strong>Sample handling.</strong> Time from draw to processing, storage temperature, freeze-thaw cycles</li>
+</ul>
+</div>
+
+<h2>Why the classifier predicts Source so well</h2>
+
+<p>For probe methylation, Source F1 = 0.610 vs Tissue F1 = 0.494. For fragment length, Source F1 = 0.596 vs Tissue F1 = 0.459. Source F1 <em>exceeds</em> Tissue F1 for most modalities. This is different from BCT, where the classifier was detecting Tissue aliasing.</p>
+
+<p>For Source, the classifier is finding <strong>real technical signal</strong> that distinguishes Fox Chase from Audubon from Sowalsky from NIH — independent of tissue biology. This is a genuine confound that could inflate cross-validation performance if Source is not stratified.</p>
+
+<h2>What to do: Source-stratified CV</h2>
+
+<p>The standard approach:</p>
+
+<ol>
+  <li><strong>For multi-source tissues</strong> (prostate, liver, stomach, healthyblood): structure cross-validation folds so that no fold contains samples from only one Source. Better: train on one Source, test on another.</li>
+  <li><strong>For single-source tissues</strong> (colon, pancreas): they cannot be validated cross-source with current data. Within-Fox-Chase comparisons are valid (colon vs pancreas, both Fox Chase), but absolute F1 numbers may be inflated by Source learning.</li>
+  <li><strong>Performance gap</strong> between standard CV (random splits) and Source-stratified CV (hold out one Source) is the measure of confound inflation.</li>
+</ol>
+
+<p>Example for stomach (Fox Chase + Audubon, both EDTA — the cleanest test case):</p>
+
+<div class="callout callout-correct">
+<strong>Train on Fox Chase stomach → test on Audubon stomach.</strong> This is the most rigorous test available with current data. If the classifier generalizes from FC to Audubon, the features are genuinely tissue-specific, not site-specific. This is the "money experiment" for the Source confound.
+</div>
+
+<h2>What NOT to do</h2>
+
+<ul>
+  <li><strong>Don't use batch correction (ComBat/harmony) for Source.</strong> Source is partly aliased with Tissue (Fox Chase has different tissue composition than Audubon). Correction would remove biological signal. Batch correction works best when batch is orthogonal to biology — not when it's correlated.</li>
+  <li><strong>Don't drop Source-correlated features.</strong> Some of those features carry real tissue signal that happens to differ by site. Removing them because they correlate with Source would throw away biology.</li>
+  <li><strong>Don't claim generalizable performance on single-source tissues.</strong> Colon and pancreas models may work beautifully in cross-validation and fail completely on new data from a different source. This is not a model failure — it's a data limitation.</li>
+</ul>
+
+<h2>Single-source tissues: what can you claim?</h2>
+
+<table>
+  <tr><th>Claim</th><th>Valid?</th><th>Why</th></tr>
+  <tr><td>"Colon and pancreas are distinguishable"</td><td><strong>Yes</strong></td><td>Both Fox Chase — same batch, so discrimination = real biology</td></tr>
+  <tr><td>"This model can identify colon cancer in a new patient"</td><td><strong>No</strong> (with current data)</td><td>Model may just be detecting "Fox Chase"</td></tr>
+  <tr><td>"If colon and pancreas CAN'T be distinguished, they lack discriminative features"</td><td><strong>Yes</strong></td><td>Same batch, null result is meaningful</td></tr>
+  <tr><td>"Training on FC colon + FC stomach, testing on Audubon stomach"</td><td><strong>Cautiously yes</strong></td><td>Colon may benefit from sharing batch with stomach, but cross-source generalization for colon itself is still unvalidated</td></tr>
+</table>
+
+<h2>Key takeaways</h2>
+
+<ol>
+  <li><strong>Source is the confound you should worry about, not BCT.</strong> It has consistently higher unique R², persists in EDTA, and is learnable by classifiers.</li>
+  <li><strong>Source-stratified CV is the mitigation.</strong> Train on one Source, test on another for multi-source tissues.</li>
+  <li><strong>Single-source tissues (colon, pancreas) are limited</strong> to within-batch comparisons. Cross-source claims require incoming data.</li>
+  <li><strong>Stomach is the cleanest test case.</strong> Fox Chase + Audubon, both EDTA — Source varies independently of BCT.</li>
+  <li><strong>Batch correction would hurt, not help.</strong> Source is correlated with Tissue; removing Source variation would remove biological signal.</li>
+</ol>
+
+<div class="quiz">
+<p><strong>Check your understanding:</strong></p>
+<p><em>Your collaborator suggests: "Let's just use ComBat to remove Source effects before training the classifier." How do you respond?</em></p>
+<blockquote>
+ComBat assumes the batch effect is additive and independent of biology. But Source is correlated with Tissue — Fox Chase samples are enriched for colon, pancreas, and prostate; Audubon samples are enriched for healthy controls and liver. ComBat would estimate a "Fox Chase effect" by averaging across all Fox Chase samples, which includes real tissue signal. Applying ComBat would remove some of the biological variation we're trying to predict. The correct approach is Source-stratified CV, which measures generalization without altering the data.
+</blockquote>
+</div>
+
+<h2>Recommended reading</h2>
+<ul>
+  <li><a href="../GLOSSARY.md">GLOSSARY.md</a> — terms used in this lesson</li>
+  <li><a href="0001-why-bct-is-not-a-dominant-confound.html">Lesson 1: Why BCT Is Not a Dominant Confound</a></li>
+  <li><a href="0002-variance-partitioning.html">Lesson 2: Variance Partitioning</a></li>
+  <li><code>output/diagnostic-protocol/adjudication_EDTA_(96).csv</code> — Source R² in the EDTA subset</li>
+  <li><code>prompts/stratification-batch-correction.md</code> — the original strategy discussion</li>
+  <li>Leek et al. (2010), "Tackling the widespread and critical impact of batch effects in high-throughput biology" — <a href="https://doi.org/10.1038/nrg2825">doi:10.1038/nrg2825</a></li>
+</ul>
+
+<p><em>Ask your teacher any follow-up questions before moving on.</em></p>
+
+<div class="footer">
+  <p>Lesson 3 of the Confound Analysis series. Part of the cup-classifier project.</p>
+</div>
+
+</body>
+</html>
