@@ -1,0 +1,40 @@
+{
+  "label": "fem4+probe_meth+fragment_length",
+  "modalities": [
+    "fem4",
+    "probe_meth",
+    "fragment_length"
+  ],
+  "n_samples": 56,
+  "n_features": 772,
+  "n_features_per_modality": {
+    "fem4": 256,
+    "probe_meth": 148,
+    "fragment_length": 368
+  },
+  "n_classes": 4,
+  "classes": [
+    "colon",
+    "liver",
+    "prostate",
+    "stomach"
+  ],
+  "macro_f1_mean": 0.6643650793650793,
+  "macro_f1_std": 0.19284442932815687,
+  "per_fold_f1": [
+    0.8263888888888888,
+    0.7309523809523809,
+    0.8888888888888888,
+    0.40476190476190477,
+    0.4708333333333333
+  ],
+  "per_fold_C": [
+    10.0,
+    1.584893192461114,
+    10.0,
+    1.584893192461114,
+    1.584893192461114
+  ],
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv": "5-fold StratifiedKFold(Tissue, source_coverage_check)"
+}

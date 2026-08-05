@@ -1,0 +1,26 @@
+{
+  "modality": "fem4",
+  "n_samples": 56,
+  "n_features": 256,
+  "n_classes": 4,
+  "classes": [
+    "colon",
+    "liver",
+    "prostate",
+    "stomach"
+  ],
+  "macro_f1_mean": 0.7537301587301587,
+  "macro_f1_std": 0.07292063751200664,
+  "per_fold_f1": [
+    0.7972222222222222,
+    0.7321428571428572,
+    0.7208333333333333,
+    0.8666666666666667,
+    0.6517857142857143
+  ],
+  "per_fold_C": [
+    10.0
+  ],
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv": "5-fold StratifiedKFold(Tissue, source_coverage_check)"
+}

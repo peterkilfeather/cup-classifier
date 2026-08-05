@@ -10,3 +10,6 @@ __pycache__/
 # PERMANOVA intermediate files (regenerated per run)
 output/diagnostic-protocol/.tmp/
 output/diagnostic-protocol/tmp/
+
+# Meeting recordings (private, large)
+meetings/
