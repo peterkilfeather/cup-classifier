@@ -56,6 +56,10 @@ _Avoid_: Panel, amplicon, region (too generic)
 The fraction of methylated molecules at a given probe or CpG site, ranging 0–1. Calculated as `CpG_meth / CpG_total`. The primary methylation feature.
 _Avoid_: Beta score, methylation level, CpG_frac (though used in data files — this is a synonym)
 
+**Probe Aggregation**:
+Collapsing per-CpG beta values to probe level as an unweighted mean of observed site betas within a probe (sites with missing values skipped). Computed downstream from the per-CpG wide matrices. **Not the same as Probe-Averaged (probe_meth)**: probe_meth betas are read-weighted (`CpG_meth / CpG_total` over all reads in the 122 bp region), while aggregation gives every measured site equal weight and spans flanking-inclusive site sets (89/148 probes have site spans beyond 122 bp). Used as the same-data granularity baseline: per-CpG vs per-CpG-aggregated isolates the granularity question holding the measurement pipeline fixed.
+_Avoid_: Probe-averaged (distinct term), probe-level mean
+
 **Per-Sample Missingness**:
 The fraction of a sample's features that are missing (NaN) in a feature matrix. Reported per version (e.g. per-CpG unenriched mean 6.0%, enriched 37.1%, post-join 164 samples). The control metric for every cross-version comparison.
 _Avoid_: Missingness alone (ambiguous with per-feature missingness)
@@ -92,7 +96,7 @@ Two pre-selected subsets are archived at `input/archived/`:
 _Avoid_: (none)
 
 **tumortype39 / tt39 Panel**:
-A set of 39 methylation probes previously identified by this group as effective for tissue-of-origin discrimination. Probe IDs are listed in `docs/references/tt39-probes.txt`. The original annotation file is archived at `input/archived/tumortype39_annotated_seq.txt`.
+A set of 39 methylation probes (450K array IDs) provided for consideration in this project; no provenance record exists in this repo (selection basis unknown). Treated as leakage-adjacent pending evidence otherwise — any comparison including it must note this. Probe IDs are listed in `docs/references/tt39-probes.txt`. The original annotation file is archived at `input/archived/tumortype39_annotated_seq.txt`.
 
 **Risk Score**:
 A per-sample prediction probability from an earlier classifier model, stored in `input/archived/metadata_riskscores_all.csv`. Outdated — not relevant for current model development.
