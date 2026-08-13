@@ -14,7 +14,24 @@ Issue: https://github.com/peterkilfeather/cup-classifier/issues/8 (steps 1–2 c
 
 ## Task — version screen (issue #8 step 3)
 
-Client requirement: run each methylation version ALONE through the **same Phase 1 protocol** (5-fold source-covering CV stratified by Tissue, StandardScaler → L1 logistic regression with inner GridSearchCV over C = logspace(-3, 1, 6), per-fold mean imputation, macro-F1 primary; Full 164-sample scope + EDTA 96-sample scope). Record per-version macro-F1 + n. Report results; **do not** interpret/decide (that is step 4's grilling session with Peter).
+Client requirement: run each methylation version ALONE through the **same Phase 1 protocol** (5-fold source-covering CV stratified by Tissue, StandardScaler → L1 logistic regression with inner GridSearchCV over C = logspace(-3, 1, 6), per-fold mean imputation, macro-F1 primary; Full 164-sample scope + EDTA 96-sample scope). Record per-version macro-F1 + n.
+
+### Step 3A — Grill the protocol FIRST (this is why you were spawned)
+
+Peter flagged two protocol questions that must be grilled (grill-with-docs session, stateful — record resolutions in CONTEXT.md/ADRs) **before any pipeline run**:
+
+1. **Why no tt39 panels?** The tt39 panel (39 probes, `docs/references/tt39-probes.txt`, "previously identified as effective for tissue-of-origin discrimination") is **fully contained in the 148-probe panel (verified: 39/39)** — a tt39-restricted screen variant is free data-wise (subset 148 columns / the per-CpG sites of those 39 probes) for every version and granularity. Open questions to grill: should the screen include a tt39-restricted variant (and for which granularities)? What is tt39's provenance — was it selected on this cohort (→ label-informed, leakage-adjacent like the archived 100kb bins in CONTEXT.md) or independently (→ legitimate fixed-panel prior)? Decide and record.
+2. **Who said 20 PCs?** `N_PCS = 20` is a Phase 1 constant ("fixed PCs for high-dim modalities") with no documented rationale. The per-CpG versions (32K unenriched, 54K enriched) go through PCA-20PC → L1. Open questions: is 20 the right PC count for these versions; should the screen vary n_PCs (e.g. 5/10/20/40 or variance-explained), or compare PCA vs per-probe CpG aggregation vs sparse LASSO inside CV? The issue's step-4 candidate list (PCA-20PC, PCA variants, per-probe CpG aggregation, tt39 restriction, sparse LASSO inside CV; RFE-CV ruled out) is the raw material — pulling the DR-route choice into this grilling is in scope.
+
+Natural satellites that hang off these and should also be grilled (evidence in `docs/related-work.md` §c and `docs/methylation-inventory.md`):
+
+- **Imputation at 37% missingness** (probe_cpg enriched): per-fold mean imputation on 37% per-site NaN is the Phase 1 protocol but is suspect at that level (literature: coverage-driven missingness is MNAR). Matched-protocol vs alternative handling — the issue says missingness handling is matched across versions; revisit given the inventory.
+- **Success criteria** for "per-CpG adds signal" — agreeing these up front sharpens the screen even though the formal call is step 4's.
+- **Unfiltered probe_meth as QC control**: identical sample×probe keys to filtered, read-level difference only — near-identical scores expected; what would a *large* gap mean, and is unfiltered worth running or just informative as a control?
+
+After grilling: record decisions, then execute the screen per the resolutions. If the grilling adds variants (tt39 subsets, PCA counts), they slot into the same config/CLI machinery below.
+
+### Step 3B — Execution (protocol per grilling; mechanics below stand unless grilling overrides)
 
 ### Add 3 versions to `scripts/data_loading.py` `MODALITY_CONFIGS`
 
@@ -52,10 +69,10 @@ Long-running job (probe_cpg enriched is 54,300 features, high_dim → PCA-20PC p
 
 ## Don't
 
-- Modify `input/`, `metadata`, or `CONTEXT.md`.
-- Run steps 4–8 (grilling, deeper exploration, combination check, folded summary) — stop after recording the screen results.
+- Modify `input/`, `metadata`, or `CONTEXT.md` except for terms/decisions resolved in the 3A grilling (record those; domain-modeling discipline).
+- Run steps 4–8 (post-screen grilling, deeper exploration, combination check, folded summary) — after the screen, report results and stop; interpretation of results is step 4's grilling with Peter.
 - Redo steps 1–2.
 
 ## Hand back
 
-Report: per-version macro-F1 + n table (Full/EDTA), any loader/pipeline surprises, and the metrics file paths. Commit scripts + outputs (repo convention: pipeline outputs are committed; the big probe_cpg files are already gitignored).
+Report: grilling decisions made (with rationale), per-version macro-F1 + n table (Full/EDTA, incl. any added variants), any loader/pipeline surprises, and the metrics file paths. Commit scripts + outputs (repo convention: pipeline outputs are committed; the big probe_cpg files are already gitignored).
