@@ -29,7 +29,18 @@ Natural satellites that hang off these and should also be grilled (evidence in `
 - **Success criteria** for "per-CpG adds signal" — agreeing these up front sharpens the screen even though the formal call is step 4's.
 - **Unfiltered probe_meth as QC control**: identical sample×probe keys to filtered, read-level difference only — near-identical scores expected; what would a *large* gap mean, and is unfiltered worth running or just informative as a control?
 
-After grilling: record decisions, then execute the screen per the resolutions. If the grilling adds variants (tt39 subsets, PCA counts), they slot into the same config/CLI machinery below.
+### 3A→3B context management (grilling may outrun the session)
+
+The grilling and the execution may not fit one window. Procedure:
+
+1. **Write-as-you-go during 3A.** After *each* resolution, record it immediately (CONTEXT.md term, ADR, or this handoff) — never accumulate decisions only in the conversation. Each grilling round ends at a checkpoint; the repo is always the complete copy. This is what makes the session disposable without losing the why.
+2. **At the 3A→3B boundary, walk the phase-boundary tree (ask-matt):**
+   - Enough smart zone left (~150k) and this handoff now states a fully decided, executable protocol (no open questions)? → **Continue** (default — the grilling's reasoning is the primary source for execution).
+   - Tight but not spent? → **`/compact`** with the instruction "3A done, decisions recorded, execute 3B" — lossy, but the decisions live in files, so the loss is tolerable.
+   - Near the limit? → stop at the nearest round boundary, finish recording, and hand to a **fresh session** via this file (handoff = the portable carrier; the next session needs zero inference). Exit criterion for 3A either way: this handoff is executable from the file alone.
+3. **During 3B**, the pipeline runs are long jobs — run them in the background (hub) or via subagent, not inline, so the window isn't consumed by waiting. Compact only at run boundaries.
+
+Never push on degraded context mid-round or mid-run.
 
 ### Step 3B — Execution (protocol per grilling; mechanics below stand unless grilling overrides)
 
