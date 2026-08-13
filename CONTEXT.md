@@ -56,6 +56,18 @@ _Avoid_: Panel, amplicon, region (too generic)
 The fraction of methylated molecules at a given probe or CpG site, ranging 0–1. Calculated as `CpG_meth / CpG_total`. The primary methylation feature.
 _Avoid_: Beta score, methylation level, CpG_frac (though used in data files — this is a synonym)
 
+**Per-Sample Missingness**:
+The fraction of a sample's features that are missing (NaN) in a feature matrix. Reported per version (e.g. per-CpG unenriched mean 6.0%, enriched 37.1%, post-join 164 samples). The control metric for every cross-version comparison.
+_Avoid_: Missingness alone (ambiguous with per-feature missingness)
+
+**Per-Feature Missingness**:
+The fraction of samples where a feature is missing (NaN). Its extremes are the all-NaN features (NaN in every sample). Long-format methylation files express this structurally: an absent sample×probe (or sample×CpG) row is a missing value.
+_Avoid_: Missingness alone (ambiguous with per-sample missingness)
+
+**Coverage (Methylation)**:
+The number of sequencing reads observed at a probe region or individual CpG site — the `n_reads` / `CpG_total` / `total_count` columns from which beta fractions are computed. Coverage drives missingness: sites below effective coverage are absent (NaN) from the feature matrix.
+_Avoid_: Depth (colloquial; file columns use read counts)
+
 **Fragmentomic Feature**:
 A feature derived from cfDNA fragment properties. Includes:
 - **Fragment length distribution**: short/long fragment ratios, modal length, bin counts across size windows
