@@ -86,6 +86,32 @@ A set of 39 methylation probes previously identified by this group as effective 
 A per-sample prediction probability from an earlier classifier model, stored in `input/archived/metadata_riskscores_all.csv`. Outdated — not relevant for current model development.
 _Avoid_: (do not use for training or evaluation)
 
+## Meeting Records
+
+The meeting pipeline (current example `meetings/260731/`; pattern from `meetings/260611`–`260702` in the elnitski/classifier repo) produces a chain of artifacts with distinct roles. Transcription runs on the cherwell RTX 3090 from `/tmp` scratch while the local GPUs are serving-loaded; scratch is wiped after outputs are rsync'd back.
+
+**Recording:**
+The raw audio of a client meeting, `meetings/<YYMMDD>/recording_<YYMMDD>.m4a`. Renamed from the device's export name to the meeting-date convention; source of truth for everything downstream.
+_Avoid_: keeping the device filename (e.g. "New Recording 69.m4a")
+
+**Raw Transcript:**
+The whisperx output: `out/<YYMMDD>/recording_<YYMMDD>.json` plus `.srt/.tsv/.txt/.vtt` renderings. Per-segment text, word timestamps, anonymous speaker labels (`SPEAKER_00`…). Never edited; the reference for all downstream artifacts.
+_Avoid_: "transcript" bare (ambiguous with the corrected version)
+
+**Speaker Turns:**
+Consecutive same-speaker whisperx segments merged into turns (`<YYMMDD>.speaker_turns.txt`) by `post_process_<YYMMDD>.py`, which also prints QC (coverage %, segments/turns/words, per-speaker talk time). Still anonymous.
+
+**Corrected Transcript:**
+Speaker turns after `apply_corrections_<YYMMDD>.py` applies (a) a provisional speaker-name map and (b) domain-term ASR corrections (`<YYMMDD>.corrected.txt` + `corrections_report.md`). PROVISIONAL until the speaker map is confirmed — diarization gives anonymous labels; identities are inferred from content.
+_Avoid_: treating the corrected transcript as authoritative before speaker confirmation
+
+**Meeting Summary:**
+The structured deliverable (`<YYMMDD>_summary.md`): Attendees, TL;DR, Decisions, Action Items, Analysis-Relevant Technical Points, Key Numbers, Open Questions, Pivotal Quotes (timestamped), Logistics. A synthesis written from the corrected transcript in the project's canonical language.
+_Avoid_: copying transcript text verbatim into the summary (it is a synthesis)
+
+**ASR Glossary (initial_prompt):**
+The domain-term passage passed to whisperx `--initial_prompt` to bias transcription toward project vocabulary. Derived from this CONTEXT.md + GLOSSARY.md at the time of the meeting; reflects SPOKEN vocabulary (e.g. "source", "collection tube") even where written artifacts use canonical terms (Clinical Site, BCT). Kept byte-identical in `transcribe_<YYMMDD>.sh` to what actually ran.
+
 ## Clinical Site
 One of the hospitals or tissue banks that contributed plasma samples: Fox Chase, Audubon (includes samples originally coded as "Audobon"), Sowalsky, NIH Clinical Center. Relevant for batch effect analysis.
 _Avoid_: Source, hospital, cohort
