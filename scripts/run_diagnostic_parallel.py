@@ -108,6 +108,11 @@ def load_modality(cfg, meta_samples):
                 df.drop(columns=[col], inplace=True)
         if cfg['sample_col'] in df.columns:
             df.set_index(cfg['sample_col'], inplace=True)
+        # Deduplicate: keep first occurrence per sample ID (matches data_loading.py)
+        dup_mask = df.index.duplicated(keep='first')
+        if dup_mask.any():
+            log(f"  Dropping {dup_mask.sum()} duplicate sample rows")
+            df = df[~dup_mask]
         X = df.values.astype(np.float64)
         sample_ids = df.index.values
         feat_names = df.columns.values

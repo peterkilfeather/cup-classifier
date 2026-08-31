@@ -68,6 +68,10 @@ _Avoid_: Missingness alone (ambiguous with per-feature missingness)
 The fraction of samples where a feature is missing (NaN). Its extremes are the all-NaN features (NaN in every sample). Long-format methylation files express this structurally: an absent sample×probe (or sample×CpG) row is a missing value.
 _Avoid_: Missingness alone (ambiguous with per-sample missingness)
 
+**All-NaN Feature**:
+A feature (e.g. a CpG site) with zero observed values across all samples. Dropped before any analysis; **un-imputable** — no observed values exist to impute from, and a mean-imputed all-NaN feature is a constant with zero variance, carrying no information. Counts: 70 (per-CpG unenriched), 1,156 (per-CpG enriched), 0 (all probe-averaged versions).
+_Avoid_: "70 instances of NaNs" (they are features, not cells), "impute them"
+
 **Coverage (Methylation)**:
 The number of sequencing reads observed at a probe region or individual CpG site — the `n_reads` / `CpG_total` / `total_count` columns from which beta fractions are computed. Coverage drives missingness: sites below effective coverage are absent (NaN) from the feature matrix.
 _Avoid_: Depth (colloquial; file columns use read counts)
@@ -169,6 +173,16 @@ Temporal effects (reagent lot, sequencing run, protocol drift) could produce spu
 ### Sex confound
 
 Sowalsky samples (all prostate, 20 samples) are 100% male. Other sources skew male (Fox Chase 80%, Audubon 65%, NIH 54%). The dataset overall is male-dominated (125 of 164).
+
+## Order Dependence
+
+**Order-Independent Attribution (Type II / Type III / Marginal)**:
+Variance attribution that does not depend on covariate order. Variance partitioning uses Type II sums of squares (each term's SS after all *other* terms, no interactions); PERMANOVA headline results use marginal (Type III) tests. Both answer "what does this covariate uniquely explain given everything else" — the answer does not change with covariate ordering.
+_Avoid_: "in order" when describing these methods (slide wording pitfall — the covariate *list* has an order, the attribution does not)
+
+**Entry-Order Sensitivity**:
+The robustness check that *does* depend on order: sequential (Type I) runs with each covariate entering first/last, used to bracket shared variance between covariates. Numbers change across orderings (e.g. FEM4 BCT R² 0.155 entering first vs 0.018 marginal); conclusions are invariant (Tissue retains the largest unique component in every ordering tested).
+_Avoid_: treating entry-order sensitivity as the headline result, or claiming "order doesn't matter" without the marginal-vs-sequential distinction
 
 ## Data Quality
 
