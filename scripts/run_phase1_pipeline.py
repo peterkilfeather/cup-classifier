@@ -8,10 +8,11 @@ Pipeline:
     2. Source-stratified CV: StratifiedKFold (by Tissue) + source-coverage check
     3. Per fold: StandardScaler → L1-logreg with inner GridSearchCV for C
     4. Report: macro-F1 (primary), balanced accuracy (secondary), per-source accuracy
-    5. EDTA-only sensitivity on 96-sample subset
-    6. Refit on all 164 samples → serialized model for Phase 2a
+    5. Scope subsets: Full (6-class, 164), TOO (5-class, 124), TOO-EDTA (4-class, 56)
+    6. Refit on all scope samples → serialized model for Phase 2a
 
-Design per protocol (docs/multi-source-validation-protocol.md §2).
+Design per protocol (docs/multi-source-validation-protocol.md §2);
+version-screen scopes per docs/version-screen-protocol.md (issue #16).
 """
 
 import sys, os, warnings, json, time, argparse
@@ -41,7 +42,8 @@ np.random.seed(42)
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE / 'scripts'))
-from data_loading import load_metadata, get_modality_cfg, load_modality
+from data_loading import (load_metadata, get_modality_cfg, load_modality,
+                          MODALITY_CONFIGS)
 
 OUT = BASE / 'output' / 'phase1'
 OUT.mkdir(parents=True, exist_ok=True)
@@ -57,8 +59,15 @@ C_GRID = np.logspace(-3, 1, 6)  # [0.001, 0.01, 0.1, 1, 10]
 MAX_ITER = 5000
 MAX_RESHUF = 100
 
-# Modalities to run (in priority order)
-PHASE1_MODALITIES = ['fem4', 'probe_meth', 'fragment_length', 'probe_cpg', 'end_density']
+# Version-screen modalities (issue #16 run matrix, rows 1-13), in matrix order
+PHASE1_MODALITIES = [
+    'probe_meth', 'probe_meth_unenriched', 'probe_meth_unfiltered_qc',
+    'probe_cpg', 'probe_cpg_enriched',
+    'probe_cpg_agg_unenriched', 'probe_cpg_agg_enriched',
+    'probe_meth_tt39_enriched', 'probe_meth_tt39_unenriched',
+    'probe_cpg_tt39_unenriched', 'probe_cpg_tt39_unenriched_lasso',
+    'probe_cpg_tt39_enriched', 'probe_cpg_tt39_enriched_lasso',
+]
 
 PALETTE_TISSUE = {
     'colon': '#e41a1c', 'liver': '#377eb8', 'pancreas': '#4daf4a',
@@ -114,6 +123,15 @@ def source_covering_split(meta, n_splits=N_SPLITS, random_state=RANDOM_STATE,
 # ── PCA for high-dim modalities ────────────────────────
 
 PCA_N_COMPONENTS = N_PCS
+
+
+def should_use_pca(cfg):
+    """True when the high-dim path should run PCA.
+
+    Raw-LASSO rows (cfg['dr'] == 'lasso', version screen rows 11/13) skip PCA:
+    mean-impute + scale + L1 directly on the raw features.
+    """
+    return cfg.get('high_dim', False) and cfg.get('dr', 'pca') == 'pca'
 
 
 def pca_fit_transform(X_tr, X_te=None):
@@ -266,7 +284,8 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
     le = LabelEncoder()
     y = le.fit_transform(meta_aligned['Tissue'].values)
     source_labels = meta_aligned['Source'].values
-    is_high_dim = cfg.get('high_dim', False)
+    dr = cfg.get('dr', 'pca')
+    use_pca = should_use_pca(cfg)
 
     fold_metrics = []
     fold_models = []
@@ -281,12 +300,13 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         pca = None
         pca_scaler = None
         fold_k = None
-        if is_high_dim:
+        if use_pca:
             # PCA reduction: impute → scale → PCA (fit on train, transform both)
             X_tr_pc, X_te_pc, pca, pca_scaler, fold_k = pca_fit_transform(X_tr, X_te)
             fold_X_tr, fold_X_te = X_tr_pc, X_te_pc
         else:
-            # Per-fold NaN imputation (fit on train, transform test)
+            # Per-fold NaN imputation (fit on train, transform test).
+            # Raw-LASSO rows take this path directly on raw features.
             col_mean = np.nanmean(X_tr, axis=0)
             col_mean = np.nan_to_num(col_mean, nan=0.0)
             X_tr = _impute_with_mean(X_tr, col_mean)
@@ -333,11 +353,11 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         })
 
         fold_models.append({
-            'scaler': pca_scaler if is_high_dim else scaler,
-            'pca': pca if is_high_dim else None,
+            'scaler': pca_scaler if use_pca else scaler,
+            'pca': pca if use_pca else None,
             'model': model,
             'C': model.C,
-            'n_pcs': fold_k,
+            'n_pcs': fold_k if use_pca else None,
             'train_idx': train_idx,
             'test_idx': test_idx,
             'selected_features': feat_names,
@@ -367,7 +387,7 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
     log(f"  Refitting on all {len(meta_aligned)} samples for Phase 2a...")
     median_C = np.median(fold_Cs)
 
-    if is_high_dim:
+    if use_pca:
         # Impute, scale, PCA on all data
         col_mean_all = np.nanmean(X, axis=0)
         col_mean_all = np.nan_to_num(col_mean_all, nan=0.0)
@@ -387,7 +407,8 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         pc_names = np.array([f'PC{i+1}' for i in range(k_full)])
         full_feat_names = pc_names
     else:
-        # Impute NaN on all data (safe for full refit; no test set involved)
+        # Impute NaN on all data (safe for full refit; no test set involved).
+        # Raw-LASSO rows take this path directly on raw features.
         col_mean_all = np.nanmean(X, axis=0)
         col_mean_all = np.nan_to_num(col_mean_all, nan=0.0)
         X_imp = _impute_with_mean(X, col_mean_all)
@@ -422,10 +443,11 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         'n_samples': len(meta_aligned),
         'cv_macro_f1_mean': macro_f1_mean,
         'cv_macro_f1_std': macro_f1_std,
-        'is_high_dim': is_high_dim,
+        'is_high_dim': use_pca,
+        'dr': dr,
     }
 
-    if is_high_dim:
+    if use_pca:
         # PCA path: scaler + PCA + model
         model_dict.update({
             'pca_scaler': pca_scaler_full,
@@ -476,7 +498,8 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         'random_state': RANDOM_STATE,
         'classifier': 'LogisticRegression(L1, saga, multinomial)',
         'cv_strategy': 'StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)',
-        'high_dim': is_high_dim,
+        'high_dim': use_pca,
+        'dr': dr,
     }
     hp_path = OUT / f'{tag}_hyperparameters.json'
     with open(hp_path, 'w') as f:
@@ -504,7 +527,11 @@ def run_modality_pipeline(mod_name, meta, label_prefix=''):
         'n_pcs': k_full,
         'model_full': model_full,
         'selected_features': selected_features,
-        'is_high_dim': is_high_dim,
+        # 'used_pca' = the PCA path ran; raw-LASSO rows are False (they keep
+        # raw feature totals in build_summary). The serialized model dict
+        # keeps the documented 'is_high_dim' artifact key instead.
+        'used_pca': use_pca,
+        'dr': dr,
     }
 
 
@@ -864,7 +891,7 @@ def run_combined_pipeline(mod_names, meta, label_prefix=''):
         'n_pcs': None,
         'model_full': model_full,
         'selected_features': selected_features,
-        'is_high_dim': False,
+        'used_pca': False,
     }
 
 
@@ -873,9 +900,12 @@ def run_combined_pipeline(mod_names, meta, label_prefix=''):
 def build_summary(all_results):
     """Aggregate per-modality results into a summary DataFrame.
 
-    Infers scope ('Full' / 'EDTA') from label prefix. Skips None results
-    (failed modalities). For high-dim modalities, reports PCA components
-    as total_features and n_original_features as additional column.
+    Infers scope ('Full' / 'TOO' / 'TOO EDTA') from label
+    prefix ('TOO ' checked before 'EDTA ', since 'TOO EDTA ' contains it).
+    Skips None results (failed modalities). For PCA-path modalities (result
+    'used_pca'), reports
+    PCA components as total_features and n_original_features as additional
+    column.
 
     Parameters
     ----------
@@ -894,10 +924,14 @@ def build_summary(all_results):
     for r in all_results:
         if r is None:
             continue
-        # Infer scope from label_prefix if provided, else 'Full'
+        # Infer scope from label prefix if provided, else 'Full'.
+        # 'TOO ' must be checked before 'EDTA ' ('TOO EDTA ' also contains 'EDTA').
         label = r['label']
-        scope = 'EDTA' if label.startswith('EDTA ') else 'Full'
-        total = r['n_pcs'] if r.get('is_high_dim') else r['n_total_features']
+        if label.startswith('TOO '):
+            scope = 'TOO EDTA' if label.startswith('TOO EDTA ') else 'TOO'
+        else:
+            scope = 'Full'
+        total = r['n_pcs'] if r.get('used_pca') else r['n_total_features']
         row = {
             'Scope': scope,
             'Modality': label,
@@ -909,10 +943,64 @@ def build_summary(all_results):
             'selected_features': r['n_nonzero_full'],
             'total_features': total,
         }
-        if r.get('is_high_dim'):
+        if r.get('used_pca'):
             row['n_original_features'] = r['n_total_features']
         rows.append(row)
     return pd.DataFrame(rows)
+
+
+def _plot_summary(summary, scope_chances):
+    """Barh of CV macro-F1 by modality, one subplot per scope, with the
+    scope's chance baseline drawn per subplot."""
+    scopes = list(summary['Scope'].unique())
+    fig, axes = plt.subplots(1, len(scopes), figsize=(max(10, 6 * len(scopes)), 9))
+    if len(scopes) == 1:
+        axes = [axes]
+    for ax, scope in zip(axes, scopes):
+        sub = summary[summary['Scope'] == scope]
+        modalities = sub['Modality'].values
+        means = sub['macro_F1_mean'].values
+        cis = sub['macro_F1_std'].values * 1.96
+        colors = plt.cm.tab10(np.linspace(0, 0.8, len(modalities)))
+        bars = ax.barh(range(len(modalities)), means, xerr=cis,
+                       color=colors, edgecolor='k', linewidth=0.5, capsize=3)
+        chance = scope_chances.get(scope)
+        if chance is not None:
+            ax.axvline(x=chance, color='gray', linestyle=':',
+                       alpha=0.7, label=f'Chance ({chance:.3f})')
+        ax.set_yticks(range(len(modalities)))
+        ax.set_yticklabels(modalities, fontsize=8)
+        ax.set_xlabel('Macro-F1')
+        ax.set_title(f'Scope: {scope}')
+        for bar, v in zip(bars, means):
+            ax.text(v + 0.01, bar.get_y() + bar.get_height()/2,
+                    f'{v:.3f}', va='center', fontsize=7)
+        ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(FIGS / 'phase1_summary.png', dpi=150)
+    plt.close(fig)
+
+
+# ── Scopes (version screen, issue #16) ────────────────
+
+SCOPE_NAMES = ['full', 'too', 'too-edta']
+
+
+def get_scope(scope_name, meta):
+    """Return (meta_subset, label_prefix) for a version-screen scope.
+
+    'full'     : all samples, 6 classes, no prefix (comparability anchor)
+    'too'      : non-healthyblood (CUP clinical task), prefix 'TOO '
+    'too-edta' : non-healthyblood EDTA-only (BCT control), prefix 'TOO EDTA '
+    """
+    if scope_name == 'full':
+        return meta, ''
+    if scope_name == 'too':
+        return meta[meta['Tissue'] != 'healthyblood'].copy(), 'TOO '
+    if scope_name == 'too-edta':
+        sub = meta[(meta['BCT'] == 'EDTA') & (meta['Tissue'] != 'healthyblood')].copy()
+        return sub, 'TOO EDTA '
+    raise ValueError(f"Unknown scope: {scope_name!r} (expected one of {SCOPE_NAMES})")
 
 
 # ── Main ──────────────────────────────────────────────
@@ -920,10 +1008,16 @@ def build_summary(all_results):
 def main():
     parser = argparse.ArgumentParser(description='Phase 1: baseline tissue classifier')
     parser.add_argument('--modalities', nargs='+', default=PHASE1_MODALITIES,
-                        choices=list(PHASE1_MODALITIES),
-                        help='Modalities to run (default: all Phase 1 modalities)')
-    parser.add_argument('--skip-edta', action='store_true',
-                        help='Skip EDTA-only sensitivity analysis')
+                        # All loadable configs stay selectable so legacy
+                        # single-modality runs (fem4, fragment_length,
+                        # end_density, cnvkit) keep working; the default is
+                        # the 13 version-screen rows.
+                        choices=sorted(MODALITY_CONFIGS),
+                        help='Modalities to run (default: 13 version-screen rows)')
+    parser.add_argument('--scopes', nargs='+', default=['full'],
+                        choices=SCOPE_NAMES,
+                        help='Scopes to run: full (6-class, 164), too (5-class, 124), '
+                             'too-edta (4-class, 56)')
     parser.add_argument('--skip-plots', action='store_true',
                         help='Skip generating plots')
     parser.add_argument('--combine', action='store_true',
@@ -932,6 +1026,7 @@ def main():
 
     log("Phase 1: Baseline tissue classifier")
     log(f"Modalities: {args.modalities}")
+    log(f"Scopes: {args.scopes}")
     log(f"{'='*60}\n")
 
     # Load metadata
@@ -939,47 +1034,33 @@ def main():
     log(f"Loaded {len(meta)} samples, {meta['Tissue'].nunique()} tissues, "
         f"{meta['Source'].nunique()} sources")
 
-    # Chance baseline
-    tissue_counts = meta['Tissue'].value_counts()
-    chance_uniform = 1 / len(tissue_counts)
-    log(f"Chance baseline (uniform): {chance_uniform:.4f}")
-    log(f"Chance baseline (stratified): {(tissue_counts / len(meta)).mean():.4f}\n")
-
-    # ── Full dataset (164 samples) ────────────────
+    # ── Per-scope runs ────────────────────────────
     all_results = []
-    for mod_name in args.modalities:
-        r = run_modality_pipeline(mod_name, meta)
-        if r:
-            all_results.append(r)
-
-    # ── EDTA-only sensitivity (96 samples) ────────
-    meta_edta = None
-    if not args.skip_edta:
-        log("\n" + "="*60)
-        log("EDTA-only sensitivity analysis")
-        log("="*60)
-        meta_edta = meta[meta['BCT'] == 'EDTA'].copy()
-        log(f"EDTA subset: {len(meta_edta)} samples, "
-            f"{meta_edta['Tissue'].nunique()} tissues")
-        # Note: pancreas has 0 EDTA samples — will produce 5-class problem
-        log(f"Tissues in EDTA: {sorted(meta_edta['Tissue'].unique())}")
+    scope_chances = {}
+    for scope_name in args.scopes:
+        scope_meta, prefix = get_scope(scope_name, meta)
+        chance = 1 / scope_meta['Tissue'].nunique()
+        scope_label = prefix.strip() or 'Full'
+        scope_chances[scope_label] = chance
+        log(f"\n{'='*60}")
+        log(f"Scope {scope_name!r} ({scope_label}): {len(scope_meta)} samples, "
+            f"{scope_meta['Tissue'].nunique()} tissues; chance={chance:.4f}")
+        log(f"Tissues: {sorted(scope_meta['Tissue'].unique())}")
+        log(f"{'='*60}")
 
         for mod_name in args.modalities:
-            r = run_modality_pipeline(mod_name, meta_edta, label_prefix='EDTA ')
+            r = run_modality_pipeline(mod_name, scope_meta, label_prefix=prefix)
             if r:
                 all_results.append(r)
 
     # ── Combined modality ─────────────────────────
     if args.combine:
-        log("\n" + "="*60)
-        log("Combined modality (fem4 + probe_meth + fragment_length)")
-        log("="*60)
-        r = run_combined_pipeline(COMBINE_MODALITIES, meta)
-        if r:
-            all_results.append(r)
-
-        if not args.skip_edta and meta_edta is not None:
-            r = run_combined_pipeline(COMBINE_MODALITIES, meta_edta, label_prefix='EDTA ')
+        for scope_name in args.scopes:
+            scope_meta, prefix = get_scope(scope_name, meta)
+            log("\n" + "="*60)
+            log(f"Combined modality ({'+'.join(COMBINE_MODALITIES)}) — scope {scope_name!r}")
+            log("="*60)
+            r = run_combined_pipeline(COMBINE_MODALITIES, scope_meta, label_prefix=prefix)
             if r:
                 all_results.append(r)
 
@@ -996,29 +1077,9 @@ def main():
         print(summary.to_string(index=False))
         print()
 
-    # Summary figure
+    # Summary figure (faceted by scope, per-scope chance line)
     if not args.skip_plots and not summary.empty:
-        fig, ax = plt.subplots(figsize=(10, 5))
-        modalities = summary['Modality'].values
-        means = summary['macro_F1_mean'].values
-        cis = summary['macro_F1_std'].values * 1.96
-        colors = plt.cm.tab10(np.linspace(0, 0.8, len(modalities)))
-        bars = ax.barh(range(len(modalities)), means, xerr=cis,
-                       color=colors, edgecolor='k', linewidth=0.5,
-                       capsize=3)
-        ax.axvline(x=chance_uniform, color='gray', linestyle=':',
-                   alpha=0.7, label=f'Chance ({chance_uniform:.3f})')
-        ax.set_yticks(range(len(modalities)))
-        ax.set_yticklabels(modalities, fontsize=9)
-        ax.set_xlabel('Macro-F1')
-        ax.set_title('Phase 1: CV Macro-F1 by Modality')
-        for bar, v in zip(bars, means):
-            ax.text(v + 0.01, bar.get_y() + bar.get_height()/2,
-                    f'{v:.3f}', va='center', fontsize=8)
-        ax.legend(fontsize=9)
-        fig.tight_layout()
-        fig.savefig(FIGS / 'phase1_summary.png', dpi=150)
-        plt.close(fig)
+        _plot_summary(summary, scope_chances)
         log(f"Saved: {FIGS / 'phase1_summary.png'}")
 
     log(f"\nAll outputs in: {OUT}/")

@@ -34,7 +34,8 @@ in `output/phase1/`.
 
 ```bash
 python3 scripts/run_phase1_pipeline.py
-# Options: --modalities fem4 probe_meth, --skip-edta, --skip-plots
+# Options: --modalities probe_meth probe_cpg_tt39_enriched, --scopes full too too-edta, --skip-plots, --combine
+# Default modalities: the 13 version-screen rows (issue #16)
 ```
 
 ### Outputs
