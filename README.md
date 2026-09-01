@@ -42,6 +42,8 @@ python3 scripts/run_phase1_pipeline.py
 
 `output/phase1/`:
 - `phase1_summary.csv` — combined results across all modalities/scopes
+- `version_screen_report.csv` — per-scope screen table (macro-F1 ± std + CI, balanced accuracy, n, features, median C, missingness, per-source accuracy)
+- `version_screen_paired_deltas.csv` — per-fold paired deltas vs same-capture probe-averaged rows (TOO scopes) + same-data aggregation pairs
 - `{modality}_cv_metrics.csv` — per-fold metrics (macro-F1, balanced accuracy, per-source accuracy)
 - `{modality}_hyperparameters.json` — pinned hyperparams for Phase 2a reproduction
 - `models/{modality}_full_model.joblib` — frozen model (scaler + L1-logreg) for Phase 2a
@@ -89,6 +91,7 @@ Output goes to `output/diagnostic-protocol/`.
 |---|---|
 | `scripts/data_loading.py` | Shared data loading (used by diagnostic + Phase 1) |
 | `scripts/run_phase1_pipeline.py` | Phase 1: L1-logreg with Source-stratified CV |
+| `scripts/report_version_screen.py` | Version screen hand-back: per-scope table + per-fold paired deltas from `output/phase1/` |
 | `scripts/run_diagnostic_parallel.py` | Confound diagnostics: PCA, PERMANOVA, classifier, variance partitioning |
 | `scripts/postprocess_permanova.py` | PERMANOVA entry-order sensitivity |
 | `scripts/clean_metadata.py` | Raw metadata → 164 clean samples |

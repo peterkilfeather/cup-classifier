@@ -1,0 +1,34 @@
+{
+  "modality": "probe_cpg",
+  "label": "TOO EDTA Per-CpG methylation (32K->PCs)",
+  "timestamp": "2026-09-01T19:39:03.011842",
+  "n_splits": 5,
+  "max_retries": 0,
+  "C_grid": [
+    0.001,
+    0.006309573444801929,
+    0.039810717055349734,
+    0.25118864315095824,
+    1.584893192461114,
+    10.0
+  ],
+  "median_C": 0.25118864315095824,
+  "per_fold_C": [
+    0.25118864315095824,
+    0.25118864315095824,
+    10.0,
+    0.25118864315095824,
+    1.584893192461114
+  ],
+  "macro_f1_mean": 0.38661338661338657,
+  "macro_f1_std": 0.0747799453285867,
+  "n_samples": 56,
+  "n_features": 31674,
+  "n_pcs": 20,
+  "n_nonzero_coef": 20,
+  "random_state": 42,
+  "classifier": "LogisticRegression(L1, saga, multinomial)",
+  "cv_strategy": "StratifiedKFold(5, stratified_by_Tissue, source_coverage_check)",
+  "high_dim": true,
+  "dr": "pca"
+}
