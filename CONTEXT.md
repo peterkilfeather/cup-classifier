@@ -65,10 +65,10 @@ The 122 bp genomic region a probe targets. Sites within it are in-probe; sites b
 _Avoid_: probe region (generic)
 
 **In-Probe Site Set**:
-A probe's per-CpG sites that fall within the Probe Window. 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — all its sites are flanking).
+A probe's per-CpG sites that fall within the Probe Window. Under the assumed ±61 bp window: 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — all its sites are flanking). Membership is window-dependent; re-derive if the client's scripts define the window differently.
 
 **Flanking-Inclusive Site Set**:
-All measured per-CpG sites of a probe regardless of position — the site set of the original per-CpG versions. 89% of sites are flanking (beyond the window); 91/148 probes carry flanking sites; site spans reach a median 529 bp (max 8,975 bp). The tt39 probe set is fully in-probe (verified 2026-09-08).
+All measured per-CpG sites of a probe regardless of position — the site set of the original per-CpG versions. Under the assumed ±61 bp window: 89% of sites are flanking (beyond the window); 91/148 probes carry flanking sites; site spans reach a median 529 bp (max 8,975 bp). The tt39 probe set is fully in-probe (verified 2026-09-08).
 
 **Per-Sample Missingness**:
 The fraction of a sample's features that are missing (NaN) in a feature matrix. Reported per version (e.g. per-CpG unenriched mean 6.0%, enriched 37.1%, post-join 164 samples). The control metric for every cross-version comparison.
