@@ -35,7 +35,7 @@ in `output/phase1/`.
 ```bash
 python3 scripts/run_phase1_pipeline.py
 # Options: --modalities probe_meth probe_cpg_tt39_enriched, --scopes full too too-edta, --skip-plots, --combine
-# Default modalities: the 13 version-screen rows (issue #16)
+# Default modalities: the 17 version-screen rows (issues #16 + #18 addendum)
 ```
 
 ### Outputs
@@ -43,7 +43,7 @@ python3 scripts/run_phase1_pipeline.py
 `output/phase1/`:
 - `phase1_summary.csv` — combined results across all modalities/scopes
 - `version_screen_report.csv` — per-scope screen table (macro-F1 ± std + CI, balanced accuracy, n, features, median C, missingness, per-source accuracy)
-- `version_screen_paired_deltas.csv` — per-fold paired deltas vs same-capture probe-averaged rows (TOO scopes) + same-data aggregation pairs
+- `version_screen_paired_deltas.csv` — per-fold paired deltas vs same-capture probe-averaged rows (TOO scopes) + same-data aggregation, site-set, and in-probe-aggregation pairs (#18)
 - `{modality}_cv_metrics.csv` — per-fold metrics (macro-F1, balanced accuracy, per-source accuracy)
 - `{modality}_hyperparameters.json` — pinned hyperparams for Phase 2a reproduction
 - `models/{modality}_full_model.joblib` — frozen model (scaler + L1-logreg) for Phase 2a

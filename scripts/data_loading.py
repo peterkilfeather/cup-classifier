@@ -14,6 +14,13 @@ META = INPUT / 'metadata' / 'metadata_cleaned.csv'
 
 PROBE_METH_DIR = INPUT / 'methylation' / 'probe_meth'
 PROBE_CPG_DIR = INPUT / 'methylation' / 'probe_cpg'
+PROBE_ANNOTATIONS = INPUT / 'methylation' / 'probe_annotations_450k.csv'
+
+# Assumed probe window half-width (bp): the 122 bp probe region centered on
+# the 450K mapinfo target (protocol addendum, issue #18). Pending the
+# client's pipeline scripts (requested 2026-09-07); the tt39 in-window guard
+# re-checks membership under any future change of this default.
+DEFAULT_HALF_WIDTH = 61
 
 # tt39 probe panel (docs/references/tt39-probes.txt): 39 Illumina 450K probes
 # from the tumortype39 set. Provenance unrecorded in this repo (selection
@@ -85,7 +92,7 @@ MODALITY_CONFIGS = {
         'file': PROBE_CPG_DIR
                 / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4_frac.wide.tsv',
         'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
-        'high_dim': False,
+        'high_dim': False, 'aggregate': True,
         'manifest': PROBE_CPG_DIR
                 / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4.manifest.tsv',
         'label': 'Per-CpG methylation (aggregated to probes, unenriched)',
@@ -94,7 +101,7 @@ MODALITY_CONFIGS = {
         'file': PROBE_CPG_DIR
                 / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_frac.wide.tsv',
         'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
-        'high_dim': False,
+        'high_dim': False, 'aggregate': True,
         'manifest': PROBE_CPG_DIR
                 / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4.manifest.tsv',
         'label': 'Per-CpG methylation (aggregated to probes, enriched)',
@@ -152,6 +159,46 @@ MODALITY_CONFIGS = {
         'probe_subset': TT39_PROBES,
         'label': 'Per-CpG methylation (tt39, enriched, raw LASSO)',
     },
+    # ── Version screen addendum rows (issue #18, protocol rows 14-17) ──
+    # In-probe-only rows: feature columns restricted to sites with
+    # |pos - mapinfo| <= half_width (default 61), derived at runtime from
+    # the manifest x probe_annotations_450k.csv join — nothing hardcoded.
+    'probe_cpg_inprobe_unenriched': {
+        'file': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4_frac.wide.tsv',
+        'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
+        'high_dim': True, 'dr': 'lasso', 'in_probe_only': True,
+        'manifest': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4.manifest.tsv',
+        'label': 'Per-CpG methylation (in-probe, unenriched, raw LASSO)',
+    },
+    'probe_cpg_inprobe_enriched': {
+        'file': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_frac.wide.tsv',
+        'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
+        'high_dim': True, 'dr': 'lasso', 'in_probe_only': True,
+        'manifest': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4.manifest.tsv',
+        'label': 'Per-CpG methylation (in-probe, enriched, raw LASSO)',
+    },
+    'probe_cpg_agg_inprobe_unenriched': {
+        'file': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4_frac.wide.tsv',
+        'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
+        'high_dim': False, 'in_probe_only': True, 'aggregate': True,
+        'manifest': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_unenriched_filtered.mNonCpGlt4.manifest.tsv',
+        'label': 'Per-CpG methylation (aggregated to probes, in-probe, unenriched)',
+    },
+    'probe_cpg_agg_inprobe_enriched': {
+        'file': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_frac.wide.tsv',
+        'sep': '\t', 'sample_col': 'sample', 'drop_cols': [],
+        'high_dim': False, 'in_probe_only': True, 'aggregate': True,
+        'manifest': PROBE_CPG_DIR
+                / 'all_samples.probe_cpg_enriched_filtered.mNonCpGlt4.manifest.tsv',
+        'label': 'Per-CpG methylation (aggregated to probes, in-probe, enriched)',
+    },
 }
 
 
@@ -205,6 +252,31 @@ def _aggregate_sites_to_probes(df, sample_col, manifest_path):
     return pd.DataFrame(out)
 
 
+def _in_probe_feature_ids(man, half_width):
+    """feature_ids whose site lies within half_width of its probe's 450K
+    mapinfo (the in-probe site set).
+
+    Joins the manifest chr/pos with probe_annotations_450k.csv chr/mapinfo,
+    normalizing chr naming (manifest uses 'chr1', annotations use '1').
+    Membership is derived at runtime — nothing probe- or count-specific is
+    hardcoded. Raises ValueError when a manifest probe has no annotation row.
+    """
+    ann = pd.read_csv(PROBE_ANNOTATIONS)
+    ann['chr'] = ann['chr'].astype(str)
+    ann['mapinfo'] = ann['mapinfo'].astype(float)
+    man = man.copy()
+    man['chr'] = man['chr'].str.replace(r'^chr', '', regex=True)
+    merged = man.merge(ann[['probe_id', 'chr', 'mapinfo']],
+                       on=['probe_id', 'chr'], how='left')
+    missing = merged.loc[merged['mapinfo'].isna(), 'probe_id'].unique()
+    if len(missing):
+        raise ValueError(
+            f"Probes in manifest missing from {PROBE_ANNOTATIONS.name}: "
+            f"{missing.tolist()}")
+    in_probe = (merged['pos'] - merged['mapinfo']).abs() <= half_width
+    return merged.loc[in_probe, 'feature_id'].tolist()
+
+
 def load_modality(cfg, meta_samples, impute=True):
     """Load a modality's feature matrix, aligned to a set of sample IDs.
 
@@ -239,17 +311,28 @@ def load_modality(cfg, meta_samples, impute=True):
         X = df[sample_cols].values.T
         sample_ids = np.array(sample_cols)
     else:
-        # Per-CpG rows restricted to subset probes: read only their site
-        # columns (feature_id per manifest), skipping the full 32K/54K read
+        # Per-CpG rows restricted to subset probes and/or in-probe sites:
+        # read only their site columns (feature_id per manifest), skipping
+        # the full 32K/54K read
         usecols = None
-        if cfg.get('manifest') is not None and cfg.get('probe_subset') is not None:
+        if cfg.get('manifest') is not None:
             man = pd.read_csv(cfg['manifest'], sep='\t')
-            missing = [p for p in cfg['probe_subset'] if p not in set(man['probe_id'])]
-            if missing:
-                raise ValueError(f"Subset probes missing from manifest: {missing}")
-            keep_feats = man.loc[man['probe_id'].isin(cfg['probe_subset']),
-                                 'feature_id'].tolist()
-            usecols = [cfg['sample_col']] + keep_feats
+            keep_feats = None
+            if cfg.get('in_probe_only'):
+                keep_feats = _in_probe_feature_ids(
+                    man, cfg.get('half_width', DEFAULT_HALF_WIDTH))
+            if cfg.get('probe_subset') is not None:
+                missing = [p for p in cfg['probe_subset'] if p not in set(man['probe_id'])]
+                if missing:
+                    raise ValueError(f"Subset probes missing from manifest: {missing}")
+                subset_feats = man.loc[man['probe_id'].isin(cfg['probe_subset']),
+                                       'feature_id'].tolist()
+                if keep_feats is None:
+                    keep_feats = subset_feats
+                else:
+                    keep_feats = [f for f in subset_feats if f in set(keep_feats)]
+            if keep_feats is not None:
+                usecols = [cfg['sample_col']] + keep_feats
 
         df = pd.read_csv(fpath, sep=cfg['sep'], usecols=usecols)
         for col in cfg.get('drop_cols', []):
@@ -266,8 +349,10 @@ def load_modality(cfg, meta_samples, impute=True):
                 raise ValueError(f"Subset probes missing from feature file: {missing}")
             df = df[[cfg['sample_col']] + list(cfg['probe_subset'])]
 
-        if cfg.get('manifest') is not None and cfg.get('probe_subset') is None:
-            # Aggregation rows: mean of observed site betas per probe
+        if cfg.get('aggregate'):
+            # Aggregation rows (mean of observed site betas per probe);
+            # the site set is whatever columns were kept above (all
+            # measured sites, or the in-probe set for in_probe_only rows)
             df = _aggregate_sites_to_probes(df, cfg['sample_col'], cfg['manifest'])
 
         if cfg['sample_col'] in df.columns:

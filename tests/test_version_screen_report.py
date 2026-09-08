@@ -65,6 +65,14 @@ def _synthetic_out(tmp_path):
         'probe_cpg_tt39_enriched': 'Per-CpG methylation (tt39, enriched)',
         'probe_cpg_tt39_enriched_lasso':
             'Per-CpG methylation (tt39, enriched, raw LASSO)',
+        'probe_cpg_inprobe_unenriched':
+            'Per-CpG methylation (in-probe, unenriched, raw LASSO)',
+        'probe_cpg_inprobe_enriched':
+            'Per-CpG methylation (in-probe, enriched, raw LASSO)',
+        'probe_cpg_agg_inprobe_unenriched':
+            'Per-CpG methylation (aggregated to probes, in-probe, unenriched)',
+        'probe_cpg_agg_inprobe_enriched':
+            'Per-CpG methylation (aggregated to probes, in-probe, enriched)',
     }
     n_feats = {'probe_meth': 148, 'probe_meth_unenriched': 148,
                'probe_meth_unfiltered_qc': 148, 'probe_cpg': 20,
@@ -72,7 +80,11 @@ def _synthetic_out(tmp_path):
                'probe_cpg_agg_enriched': 148, 'probe_meth_tt39_enriched': 39,
                'probe_meth_tt39_unenriched': 39, 'probe_cpg_tt39_unenriched': 20,
                'probe_cpg_tt39_unenriched_lasso': 900,
-               'probe_cpg_tt39_enriched': 20, 'probe_cpg_tt39_enriched_lasso': 1300}
+               'probe_cpg_tt39_enriched': 20, 'probe_cpg_tt39_enriched_lasso': 1300,
+               'probe_cpg_inprobe_unenriched': 3538,
+               'probe_cpg_inprobe_enriched': 5723,
+               'probe_cpg_agg_inprobe_unenriched': 147,
+               'probe_cpg_agg_inprobe_enriched': 147}
     # Distinct base macro-F1 per modality so paired deltas are non-trivial;
     # probe_cpg (0.70) vs its anchor probe_meth_unenriched (0.60) = +0.1.
     base_f1 = {m: 0.55 + 0.01 * i for i, m in enumerate(pipeline.PHASE1_MODALITIES)}
@@ -111,9 +123,15 @@ def test_same_capture_anchor_map():
     assert rep.anchor_for('probe_cpg_tt39_unenriched_lasso') == 'probe_meth_tt39_unenriched'
     assert rep.anchor_for('probe_cpg_tt39_enriched') == 'probe_meth_tt39_enriched'
     assert rep.anchor_for('probe_cpg_tt39_enriched_lasso') == 'probe_meth_tt39_enriched'
+    assert rep.anchor_for('probe_cpg_agg_inprobe_unenriched') == 'probe_meth_unenriched'
+    assert rep.anchor_for('probe_cpg_agg_inprobe_enriched') == 'probe_meth'
     # probe-avg rows are anchors themselves, not compared to themselves
     for m in ['probe_meth', 'probe_meth_unenriched', 'probe_meth_unfiltered_qc',
               'probe_meth_tt39_enriched', 'probe_meth_tt39_unenriched']:
+        assert rep.anchor_for(m) is None
+    # per-CpG in-probe rows pair via the in-probe aggregation anchor only:
+    # a probe_meth pairing would conflate granularity with weighting
+    for m in ['probe_cpg_inprobe_unenriched', 'probe_cpg_inprobe_enriched']:
         assert rep.anchor_for(m) is None
 
 
@@ -138,6 +156,25 @@ def test_aggregated_anchor_same_data_only():
         anchor = rep.AGGREGATED_ANCHOR[m]
         # same capture: unenriched pairs unenriched, enriched pairs enriched
         assert ('_enriched' in m) == ('_enriched' in anchor)
+
+
+def test_addendum_anchor_maps():
+    # Addendum (issue #18) pairings:
+    # - site-set isolates the site set (same weighting + granularity)
+    # - in-probe-aggregation isolates granularity in-window (same data)
+    assert rep.SITE_SET_ANCHOR == {
+        'probe_cpg_agg_inprobe_unenriched': 'probe_cpg_agg_unenriched',
+        'probe_cpg_agg_inprobe_enriched': 'probe_cpg_agg_enriched',
+    }
+    assert rep.INPROBE_AGG_ANCHOR == {
+        'probe_cpg_inprobe_unenriched': 'probe_cpg_agg_inprobe_unenriched',
+        'probe_cpg_inprobe_enriched': 'probe_cpg_agg_inprobe_enriched',
+    }
+    for m in pipeline.PHASE1_MODALITIES:
+        for anchor in (rep.SITE_SET_ANCHOR.get(m), rep.INPROBE_AGG_ANCHOR.get(m)):
+            if anchor is not None:
+                # same capture: unenriched pairs unenriched, enriched pairs enriched
+                assert ('_enriched' in m) == ('_enriched' in anchor)
 
 
 # ── tag convention (mirrors pipeline) ─────────────────
@@ -192,10 +229,10 @@ def test_build_report_from_outputs(tmp_path):
 
     summary, deltas = rep.build_report(out, missingness_fn=fake_missing)
 
-    # Per-scope table: 2 scopes x 13 rows
-    assert len(summary) == 26
+    # Per-scope table: 2 scopes x 17 rows
+    assert len(summary) == 34
     too = summary[summary['scope'] == 'TOO']
-    assert len(too) == 13
+    assert len(too) == 17
     row = too[too['modality'] == 'probe_cpg'].iloc[0]
     assert row['macro_F1_mean'] == pytest.approx(0.7)
     assert row['macro_F1_std'] == pytest.approx(0.05)
@@ -209,33 +246,53 @@ def test_build_report_from_outputs(tmp_path):
     assert row['src_acc_SrcA'] == pytest.approx(0.5)
     assert row['src_acc_SrcB'] == pytest.approx(0.6)
 
-    # Deltas: TOO scope only; 8 pairings x probe-averaged anchor (all per-CpG
-    # rows incl. aggregated) + 2 same-data probe-aggregation pairings, one
+    # Deltas: TOO scope only; 10 pairings x probe-averaged anchor (all
+    # per-CpG rows incl. aggregated and agg in-probe) + 2 same-data
+    # probe-aggregation + 2 site-set + 2 in-probe-aggregation pairings, one
     # row per fold (5). Full scope never compared. tt39 rows pair ONLY
     # against their probe-averaged tt39 anchor (no same-data agg row exists).
-    assert len(deltas) == 50
+    assert len(deltas) == 80
     assert (deltas['scope'] == 'TOO').all()
     assert (deltas['anchor_type'].value_counts().to_dict()
-            == {'probe-averaged': 40, 'probe-aggregation': 10})
+            == {'probe-averaged': 50, 'probe-aggregation': 10,
+                'site-set': 10, 'in-probe-aggregation': 10})
     d = deltas[(deltas['modality'] == 'probe_cpg')
                & (deltas['anchor_type'] == 'probe-averaged')].iloc[0]
     assert d['anchor'] == 'probe_meth_unenriched'
     assert d['n_folds_positive'] == 5
     assert d['mean_delta'] == pytest.approx(0.1)
 
+    # Addendum pairings present, with the isolating anchors
+    site_set = deltas[(deltas['anchor_type'] == 'site-set')]
+    assert set(site_set['modality']) == {'probe_cpg_agg_inprobe_unenriched',
+                                         'probe_cpg_agg_inprobe_enriched'}
+    assert set(site_set['anchor']) == {'probe_cpg_agg_unenriched',
+                                       'probe_cpg_agg_enriched'}
+    inprobe_agg = deltas[(deltas['anchor_type'] == 'in-probe-aggregation')]
+    assert set(inprobe_agg['modality']) == {'probe_cpg_inprobe_unenriched',
+                                            'probe_cpg_inprobe_enriched'}
+    assert set(inprobe_agg['anchor']) == {'probe_cpg_agg_inprobe_unenriched',
+                                          'probe_cpg_agg_inprobe_enriched'}
+
 
 def test_build_report_missing_anchor_skips_deltas(tmp_path):
     out = _synthetic_out(tmp_path)
     # Drop the anchor's cv metrics: that pairing is skipped, not crashed.
-    # probe_meth anchors the enriched rows (probe_cpg_enriched and
-    # probe_cpg_agg_enriched, probe-averaged pairings) -> 2 pairings dropped.
+    # probe_meth anchors the enriched rows (probe_cpg_enriched,
+    # probe_cpg_agg_enriched and probe_cpg_agg_inprobe_enriched,
+    # probe-averaged pairings) -> 3 pairings dropped.
     (out / 'TOO_probe_meth_cv_metrics.csv').unlink()
     summary, deltas = rep.build_report(out, missingness_fn=lambda m, s: (0.0, 0.0))
     # probe_meth's own TOO row is skipped too (no cv_metrics)
-    assert len(summary) == 25
-    assert len(deltas) == 40
+    assert len(summary) == 33
+    assert len(deltas) == 65
     assert not ((deltas['modality'] == 'probe_cpg_enriched')
                 & (deltas['anchor_type'] == 'probe-averaged')).any()
+    assert not ((deltas['modality'] == 'probe_cpg_agg_inprobe_enriched')
+                & (deltas['anchor_type'] == 'probe-averaged')).any()
+    # the agg in-probe row still pairs via its site-set anchor
+    assert ((deltas['modality'] == 'probe_cpg_agg_inprobe_enriched')
+            & (deltas['anchor_type'] == 'site-set')).any()
     # probe_cpg's own probe-averaged anchor (unenriched) is untouched
     assert ((deltas['modality'] == 'probe_cpg')
             & (deltas['anchor_type'] == 'probe-averaged')).any()
@@ -247,7 +304,7 @@ def test_build_report_missing_own_metrics_skips(tmp_path):
     # row, do not raise
     (out / 'TOO_probe_cpg_cv_metrics.csv').unlink()
     summary, deltas = rep.build_report(out, missingness_fn=lambda m, s: (0.0, 0.0))
-    assert len(summary) == 25
+    assert len(summary) == 33
     assert 'probe_cpg' not in summary[summary['scope'] == 'TOO']['modality'].values
     assert not ((deltas['modality'] == 'probe_cpg')
                 & (deltas['anchor_type'] == 'probe-averaged')).any()

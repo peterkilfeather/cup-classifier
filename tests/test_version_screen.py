@@ -1,7 +1,7 @@
 """Version screen (issue #16): loader mechanics + pipeline scope changes.
 
 Covers the ticket's TDD list:
-- new MODALITY_CONFIGS entries (13 screen rows registered, correct flags)
+- new MODALITY_CONFIGS entries (17 screen rows registered, correct flags)
 - long_format pivot + duplicate sample x probe ValueError
 - tt39 probe-level / manifest site-level subsetting
 - per-CpG -> probe aggregation (mean of observed sites)
@@ -25,7 +25,8 @@ import data_loading
 import run_phase1_pipeline as pipeline
 
 
-# The 13 version-screen row names (protocol run matrix, rows 1-13).
+# The 17 version-screen row names (protocol run matrix, rows 1-17: the 13
+# issue-#16 rows plus the 4 in-probe addendum rows, issue #18).
 SCREEN_ROWS = [
     'probe_meth', 'probe_meth_unenriched', 'probe_meth_unfiltered_qc',
     'probe_cpg', 'probe_cpg_enriched',
@@ -33,6 +34,8 @@ SCREEN_ROWS = [
     'probe_meth_tt39_enriched', 'probe_meth_tt39_unenriched',
     'probe_cpg_tt39_unenriched', 'probe_cpg_tt39_unenriched_lasso',
     'probe_cpg_tt39_enriched', 'probe_cpg_tt39_enriched_lasso',
+    'probe_cpg_inprobe_unenriched', 'probe_cpg_inprobe_enriched',
+    'probe_cpg_agg_inprobe_unenriched', 'probe_cpg_agg_inprobe_enriched',
 ]
 
 
@@ -166,7 +169,7 @@ def test_agg_by_probe_means_observed_sites(tmp_path):
     _write_wide(f, ['f1', 'f2', 'f3'],
                 [('A', [0.4, 0.8, None]), ('B', [None, None, None]),
                  ('C', [0.2, 0.6, None])])
-    cfg = _cfg(file=str(f), manifest=str(man))
+    cfg = _cfg(file=str(f), manifest=str(man), aggregate=True)
 
     X, ids, feats = data_loading.load_modality(cfg, np.array(['A', 'B', 'C']),
                                                impute=False)
@@ -185,7 +188,7 @@ def test_agg_by_probe_ignores_unobserved_sites_per_sample(tmp_path):
     f = tmp_path / 'wide.tsv'
     _write_wide(f, ['f1', 'f2', 'f3'],
                 [('A', [0.4, 0.8, 0.2]), ('B', [None, 0.6, 0.5])])
-    cfg = _cfg(file=str(f), manifest=str(man))
+    cfg = _cfg(file=str(f), manifest=str(man), aggregate=True)
 
     X, ids, feats = data_loading.load_modality(cfg, np.array(['A', 'B']))
 
@@ -231,6 +234,20 @@ def test_screen_config_flags():
         cfg = data_loading.MODALITY_CONFIGS[name]
         assert cfg['manifest'] is not None
         assert cfg['high_dim'] is False
+        assert cfg['aggregate'] is True
+
+    for name in ('probe_cpg_inprobe_unenriched', 'probe_cpg_inprobe_enriched'):
+        cfg = data_loading.MODALITY_CONFIGS[name]
+        assert cfg['in_probe_only'] is True
+        assert cfg['high_dim'] is True
+        assert cfg['dr'] == 'lasso'
+        assert not pipeline.should_use_pca(cfg)
+
+    for name in ('probe_cpg_agg_inprobe_unenriched', 'probe_cpg_agg_inprobe_enriched'):
+        cfg = data_loading.MODALITY_CONFIGS[name]
+        assert cfg['in_probe_only'] is True
+        assert cfg['high_dim'] is False
+        assert cfg['aggregate'] is True
 
 
 def test_should_use_pca():

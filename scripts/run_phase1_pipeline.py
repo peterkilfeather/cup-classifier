@@ -59,7 +59,8 @@ C_GRID = np.logspace(-3, 1, 6)  # [0.001, 0.01, 0.1, 1, 10]
 MAX_ITER = 5000
 MAX_RESHUF = 100
 
-# Version-screen modalities (issue #16 run matrix, rows 1-13), in matrix order
+# Version-screen modalities (protocol run matrix, rows 1-17: the 13 issue-#16
+# rows + the 4 in-probe addendum rows, issue #18), in matrix order
 PHASE1_MODALITIES = [
     'probe_meth', 'probe_meth_unenriched', 'probe_meth_unfiltered_qc',
     'probe_cpg', 'probe_cpg_enriched',
@@ -67,6 +68,8 @@ PHASE1_MODALITIES = [
     'probe_meth_tt39_enriched', 'probe_meth_tt39_unenriched',
     'probe_cpg_tt39_unenriched', 'probe_cpg_tt39_unenriched_lasso',
     'probe_cpg_tt39_enriched', 'probe_cpg_tt39_enriched_lasso',
+    'probe_cpg_inprobe_unenriched', 'probe_cpg_inprobe_enriched',
+    'probe_cpg_agg_inprobe_unenriched', 'probe_cpg_agg_inprobe_enriched',
 ]
 
 PALETTE_TISSUE = {
@@ -128,8 +131,9 @@ PCA_N_COMPONENTS = N_PCS
 def should_use_pca(cfg):
     """True when the high-dim path should run PCA.
 
-    Raw-LASSO rows (cfg['dr'] == 'lasso', version screen rows 11/13) skip PCA:
-    mean-impute + scale + L1 directly on the raw features.
+    Raw-LASSO rows (cfg['dr'] == 'lasso', version screen rows 11/13 and
+    the in-probe rows 14/15) skip PCA: mean-impute + scale + L1 directly
+    on the raw features.
     """
     return cfg.get('high_dim', False) and cfg.get('dr', 'pca') == 'pca'
 
@@ -1011,9 +1015,9 @@ def main():
                         # All loadable configs stay selectable so legacy
                         # single-modality runs (fem4, fragment_length,
                         # end_density, cnvkit) keep working; the default is
-                        # the 13 version-screen rows.
+                        # the 17 version-screen rows.
                         choices=sorted(MODALITY_CONFIGS),
-                        help='Modalities to run (default: 13 version-screen rows)')
+                        help='Modalities to run (default: 17 version-screen rows)')
     parser.add_argument('--scopes', nargs='+', default=['full'],
                         choices=SCOPE_NAMES,
                         help='Scopes to run: full (6-class, 164), too (5-class, 124), '

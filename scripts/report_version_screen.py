@@ -1,6 +1,6 @@
 """Version screen hand-back report (ticket #12).
 
-Reads the 39-run outputs written by scripts/run_phase1_pipeline.py into
+Reads the run outputs written by scripts/run_phase1_pipeline.py into
 output/phase1/ and produces the hand-back table:
 
 - Per-scope table: row, macro-F1 mean ± std (with 95% CI), balanced
@@ -13,9 +13,12 @@ output/phase1/ and produces the hand-back table:
   Anchors follow docs/version-screen-protocol.md ("pair same captures").
   Also pairs each per-CpG row with its per-CpG aggregation row (same-data
   granularity test — restricted to same-data pairs: no aggregated row
-  exists for the tt39 probe subset).
+  exists for the tt39 probe subset). Addendum pairings (issue #18):
+  agg in-probe vs probe_meth (isolates weighting), agg in-probe vs agg
+  flanking-inclusive (isolates site set), per-CpG in-probe vs agg
+  in-probe (same-data granularity in-window).
 
-No pipeline changes. Run: python3 scripts/report_version_screen.py
+Run: python3 scripts/report_version_screen.py
 Outputs: output/phase1/version_screen_report.csv, version_screen_paired_deltas.csv
 """
 import sys
@@ -40,6 +43,8 @@ SCOPE_TO_SUMMARY = {'full': 'Full', 'too': 'TOO', 'too-edta': 'TOO EDTA'}
 
 # Same-capture probe-averaged anchor per per-CpG row (protocol run matrix).
 # probe-averaged rows are anchors themselves and are excluded from the table.
+# The in-probe aggregation rows pair against their same-capture probe_meth
+# row: window-matched, so the delta isolates weighting (issue #18).
 SAME_CAPTURE_ANCHOR = {
     'probe_cpg': 'probe_meth_unenriched',
     'probe_cpg_enriched': 'probe_meth',
@@ -49,6 +54,8 @@ SAME_CAPTURE_ANCHOR = {
     'probe_cpg_tt39_unenriched_lasso': 'probe_meth_tt39_unenriched',
     'probe_cpg_tt39_enriched': 'probe_meth_tt39_enriched',
     'probe_cpg_tt39_enriched_lasso': 'probe_meth_tt39_enriched',
+    'probe_cpg_agg_inprobe_unenriched': 'probe_meth_unenriched',
+    'probe_cpg_agg_inprobe_enriched': 'probe_meth',
 }
 
 # Clean granularity test (same data, protocol): per-CpG row vs its
@@ -58,6 +65,23 @@ SAME_CAPTURE_ANCHOR = {
 AGGREGATED_ANCHOR = {
     'probe_cpg': 'probe_cpg_agg_unenriched',
     'probe_cpg_enriched': 'probe_cpg_agg_enriched',
+}
+
+# Addendum (issue #18) pairings:
+# - site-set: agg in-probe vs agg flanking-inclusive — same weighting and
+#   granularity, isolates the site set (window vs flanking-inclusive).
+# - in-probe-aggregation: per-CpG in-probe LASSO vs agg in-probe — same data
+#   and window, isolates granularity in-window. The per-CpG in-probe rows
+#   get NO probe_meth pairing: that would conflate granularity with
+#   weighting (their probe-averaged anchor is the agg in-probe row).
+SITE_SET_ANCHOR = {
+    'probe_cpg_agg_inprobe_unenriched': 'probe_cpg_agg_unenriched',
+    'probe_cpg_agg_inprobe_enriched': 'probe_cpg_agg_enriched',
+}
+
+INPROBE_AGG_ANCHOR = {
+    'probe_cpg_inprobe_unenriched': 'probe_cpg_agg_inprobe_unenriched',
+    'probe_cpg_inprobe_enriched': 'probe_cpg_agg_inprobe_enriched',
 }
 
 # Summary columns the report reads from phase1_summary.csv
@@ -204,7 +228,9 @@ def build_report(out_dir=OUT, meta=None, missingness_fn=None):
             if scope == 'full':
                 continue  # paired deltas are TOO-scope only (protocol)
             for kind, anchor_map in [('probe-averaged', SAME_CAPTURE_ANCHOR),
-                                     ('probe-aggregation', AGGREGATED_ANCHOR)]:
+                                     ('probe-aggregation', AGGREGATED_ANCHOR),
+                                     ('site-set', SITE_SET_ANCHOR),
+                                     ('in-probe-aggregation', INPROBE_AGG_ANCHOR)]:
                 anchor = anchor_map.get(mod_name)
                 if anchor is None:
                     continue

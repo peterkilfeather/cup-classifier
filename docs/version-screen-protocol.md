@@ -86,8 +86,8 @@ for TOO scopes (Phase 2a relevant), 6-class for the comparability scope.
 ## Step 8 note
 
 The issue's "expect 12 rows" (10 modality×scope + 2 combined) is obsolete:
-the screen produces 39 rows + combined rows. Step 8 must be rewritten with the
-new scope structure and row counts.
+the screen produces 51 rows (39 + 12 addendum rows, issue #18) + combined
+rows. Step 8 must be rewritten with the new scope structure and row counts.
 
 ## Out of scope (deferred)
 
@@ -95,3 +95,86 @@ new scope structure and row counts.
   selection → step 5 deeper exploration, informed by screen results.
 - Combination with FEM4 → step 6 (needs 5-class FEM4 rerun for comparability).
 - Exploration log → step 7. Folded summary → step 8 (rewritten).
+
+## Addendum: in-probe-only rows (issue #18) — mechanics landed, execution pending
+
+Extends the screen with rows restricted to the **In-Probe Site Set** (sites
+within the 122 bp probe window) and a concrete decomposition of the
+difference between client probe-averaged values (`probe_meth`: read-weighted
+`CpG_meth / CpG_total` over the window) and the per-CpG aggregation
+(unweighted mean of observed site betas over the flanking-inclusive set).
+Client-committed (2026-09-01 hand-back): "I will be running a parallel
+version that excludes those CpGs we talked about that are located beyond
+the probe bounds."
+
+### Window definition
+
+- Center: probe mapinfo from `probe_annotations_450k.csv` (the 450K target).
+- Half-width: config key `half_width`, default **61 bp** (122 bp region
+  centered on the target).
+- Membership derived at runtime: manifest chr/pos joined with annotation
+  chr/mapinfo (`|pos − mapinfo| ≤ half_width`), chr naming normalized
+  (manifest `chr1`, annotations `1`). Nothing probe- or count-specific is
+  hardcoded; per-probe site counts are computed at load.
+- Sanity anchor: the assumed ±61 bp window is checked against the client's
+  pipeline scripts + one-sample raw Bismark output (requested 2026-09-07;
+  reply accepted 2026-09-07) before the execution runs.
+- Under the assumed window (verified 2026-09-08): 3,546/32,084 sites
+  in-probe (unenriched), 5,865/54,300 (enriched); 147/148 probes have ≥1
+  in-probe site — cg14861089 has none (derived; report the actual counts
+  per run). The tt39 probe set sits fully in-window (max site distance
+  61 bp, both captures; guard test re-checks under any window change).
+
+### Decisions (grilled 2026-09-08)
+
+- **Per-CpG in-probe rows use raw LASSO, NOT PCA-20PC.** In-window filtering
+  cuts features ~9x (32K→3.5K / 54K→5.9K), which brings raw LASSO back on
+  the table (the tt39 LASSO pilot already outperformed PCA in TOO-EDTA).
+  PCA runs are deferred until PC-count appropriateness is examined.
+- **No winner crowned** from this addendum; the step-4 grilling session
+  (winner call, issue #8) stays open and now gates on these rows (the
+  per-CpG deltas from #12 are 89% flanking sites — the call could flip
+  in-window).
+- 12 fresh runs (4 rows × 3 scopes); no reuse. Execution waits on the client
+  window definition — mechanics land first; the ticket stays open.
+
+### Run matrix (addendum rows 14–17)
+
+| # | Row | Features | Notes |
+|---|-----|----------|-------|
+| 14 | per-CpG in-probe unenriched raw LASSO | ~3.5K | wide subset, `in_probe_only`, `dr: lasso` |
+| 15 | per-CpG in-probe enriched raw LASSO | ~5.9K | wide subset, `in_probe_only`, `dr: lasso` |
+| 16 | per-CpG aggregated in-probe → probes, unenriched | 147 | mean of in-probe sites; cg14861089 drops |
+| 17 | per-CpG aggregated in-probe → probes, enriched | 147 | mean of in-probe sites; cg14861089 drops |
+
+Feature counts are pre-drop memberships (all-NaN feature drops apply at
+load); actual per-run counts are reported from the runs. Probes with zero
+in-probe sites drop out as a consequence of the filter — never hardcoded.
+
+### Reporting (paired deltas per scope)
+
+- agg in-probe vs probe_meth — window-matched; isolates **weighting**
+  (read-weighted vs unweighted)
+- agg in-probe vs agg flanking-inclusive — isolates **site set** (window vs
+  flanking-inclusive)
+- per-CpG in-probe LASSO vs agg in-probe — same-data granularity, in-window
+
+### Decomposition deliverable (execution)
+
+Per-probe delta table of client probe_meth vs our aggregation, split by
+mechanism:
+
+- **weighting** (read-weighted vs unweighted): enriched full 2×2 —
+  read-weighted in-window (= client), read-weighted all-sites (from the
+  enriched per-CpG long file), unweighted in-window (= agg in-probe),
+  unweighted all-sites (= agg). Unenriched: 3 of 4 cells (no per-CpG long
+  file).
+- **site set** (window vs flanking-inclusive)
+- **missingness** (unweighted mean over few observed sites; cg23960736 is
+  0% flanking yet the largest delta +0.216)
+
+Headline measured (2026-09-08): median per-probe r 0.990 (enriched) / 0.970
+(unenriched); MAD ≈ 0.024; 19/148 probes with |mean Δ| > 0.05; worst
+cg23960736 +0.216, cg14743594 +0.213 (91% flanking), cg14394692 +0.184 (95%
+flanking). Reconcile with the client scripts when received; verify the
+one-sample raw Bismark output reproduces their `CpG_frac`.
