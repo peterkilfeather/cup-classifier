@@ -1,5 +1,10 @@
 # Handoff: Methylation version screen execution (issue #8, step 3)
 
+> **ARCHIVED 2026-09-08** — execution complete: mechanics landed in #16, all 39 runs + hand-back in #12.
+> Live spec: `docs/version-screen-protocol.md` (being extended by #18). Kept for provenance only;
+> its runtime estimate (4–8 h) and tt39 site counts (~5–8K) are superseded by measured facts
+> (≈47 min; 773/1,329 sites).
+
 ## Repo
 
 `github.com/peterkilfeather/cup-classifier` at `/xscratch/farney/cup-classifier`, branch `main`.

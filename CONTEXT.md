@@ -34,7 +34,7 @@ _Avoid_: ctDNA (circulating tumor DNA is a subset, not a synonym)
 
 **Methylation Feature Format**:
 Whether the methylation data is averaged per probe or kept per individual CpG site. Two variants:
-- **Probe-averaged** (`probe_meth`): methylation values are collapsed across all CpG sites within each 122bp probe region. The feature is the probe-level beta fraction.
+- **Probe-averaged** (`probe_meth`): methylation values are collapsed across all CpG sites within each 122bp probe region. The feature is the probe-level beta fraction. The client's email term "pre-probe averaging" (2026-09 correspondence) means the same thing.
 - **Per-CpG** (`probe_cpg`): each individual CpG site within a probe is a separate feature.
 _Avoid_: Long format, wide format (these describe file shape, not feature semantics)
 
@@ -57,8 +57,18 @@ The fraction of methylated molecules at a given probe or CpG site, ranging 0–1
 _Avoid_: Beta score, methylation level, CpG_frac (though used in data files — this is a synonym)
 
 **Probe Aggregation**:
-Collapsing per-CpG beta values to probe level as an unweighted mean of observed site betas within a probe (sites with missing values skipped). Computed downstream from the per-CpG wide matrices. **Not the same as Probe-Averaged (probe_meth)**: probe_meth betas are read-weighted (`CpG_meth / CpG_total` over all reads in the 122 bp region), while aggregation gives every measured site equal weight and spans flanking-inclusive site sets (89/148 probes have site spans beyond 122 bp). Used as the same-data granularity baseline: per-CpG vs per-CpG-aggregated isolates the granularity question holding the measurement pipeline fixed.
+Collapsing per-CpG beta values to probe level as an unweighted mean of observed site betas within a probe (sites with missing values skipped). Computed downstream from the per-CpG wide matrices. **Not the same as Probe-Averaged (probe_meth)**: probe_meth betas are read-weighted (`CpG_meth / CpG_total` over all reads in the 122 bp region), while aggregation gives every measured site equal weight and spans the flanking-inclusive site set. Used as the same-data granularity baseline: per-CpG vs per-CpG-aggregated isolates the granularity question holding the measurement pipeline fixed.
 _Avoid_: Probe-averaged (distinct term), probe-level mean
+
+**Probe Window**:
+The 122 bp genomic region a probe targets. Sites within it are in-probe; sites beyond it are flanking. Edge definition assumed mapinfo ± 61 bp (450K target position centered) pending the client's pipeline scripts (requested 2026-09-07).
+_Avoid_: probe region (generic)
+
+**In-Probe Site Set**:
+A probe's per-CpG sites that fall within the Probe Window. 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — all its sites are flanking).
+
+**Flanking-Inclusive Site Set**:
+All measured per-CpG sites of a probe regardless of position — the site set of the original per-CpG versions. 89% of sites are flanking (beyond the window); 91/148 probes carry flanking sites; site spans reach a median 529 bp (max 8,975 bp). The tt39 probe set is fully in-probe (verified 2026-09-08).
 
 **Per-Sample Missingness**:
 The fraction of a sample's features that are missing (NaN) in a feature matrix. Reported per version (e.g. per-CpG unenriched mean 6.0%, enriched 37.1%, post-join 164 samples). The control metric for every cross-version comparison.
