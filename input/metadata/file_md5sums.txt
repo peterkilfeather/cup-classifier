@@ -12,3 +12,4 @@ bce82658f080968f373dc6ad25729657  ./cnvkit/cnvkit_features_thr0.05.tsv
 c4197b87929208af0aa68929ddaead1e  ./probe_cpg/all_samples.probe_cpg_enriched_filtered.mNonCpGlt4_frac.wide.tsv
 d1421bf769f10625a88a751667b58281  ./metadata_riskscores_all.csv
 e32b6d19f149274f5bcd8a2b2262600e  ./all_samples.probe_meth_filtered.mNonCpGlt4.long_v2.tsv
+22b5079f86c27fed9d3d54e6e508aace ./methylation/client_pipeline/bismark_processing_pipeline_v39s2.zip
