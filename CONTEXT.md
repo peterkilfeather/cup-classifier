@@ -61,14 +61,18 @@ Collapsing per-CpG beta values to probe level as an unweighted mean of observed 
 _Avoid_: Probe-averaged (distinct term), probe-level mean
 
 **Probe Window**:
-The 122 bp genomic region a probe targets. Sites within it are in-probe; sites beyond it are flanking. Edge definition assumed mapinfo ± 61 bp (450K target position centered) pending the client's pipeline scripts (requested 2026-09-07).
-_Avoid_: probe region (generic)
+The 122 bp genomic region a probe targets. Sites within it are in-probe; sites beyond it are flanking. Edge definition assumed mapinfo ± 61 bp (450K target position centered; the small client capture regions are mapinfo-centered). Distinct from the client's Capture Region (variable width). No client artifact implements this window — the in-probe site set is our analytical definition.
+_Avoid_: probe region (generic), capture region
 
 **In-Probe Site Set**:
-A probe's per-CpG sites that fall within the Probe Window. Under the assumed ±61 bp window: 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — all its sites are flanking). Membership is window-dependent; re-derive if the client's scripts define the window differently.
+A probe's per-CpG sites that fall within the Probe Window. Under the assumed ±61 bp window: 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — its 450K mapinfo is displaced ~963 bp from its true sites, all of which sit inside its client capture region). Membership is window-dependent; re-derive if the client's scripts define the window differently.
 
 **Flanking-Inclusive Site Set**:
 All measured per-CpG sites of a probe regardless of position — the site set of the original per-CpG versions. Under the assumed ±61 bp window: 89% of sites are flanking (beyond the window); 91/148 probes carry flanking sites; site spans reach a median 529 bp (max 8,975 bp). The tt39 probe set is fully in-probe (verified 2026-09-08).
+
+**Capture Region**:
+One of the client's capture design regions (`twist_regions_150.hg19.bed`): one per Probe, nominal 150 bp, actual widths 120 bp–8.9 kb (the small ones are mapinfo-centered). Reads are assigned to probes by best overlap with these regions; the Per-CpG site sets are the CpG sites within them. Because of this, Probe-Averaged (probe_meth) values cover the Flanking-Inclusive Site Set.
+_Avoid_: probe region, probe window
 
 **Per-Sample Missingness**:
 The fraction of a sample's features that are missing (NaN) in a feature matrix. Reported per version (e.g. per-CpG unenriched mean 6.0%, enriched 37.1%, post-join 164 samples). The control metric for every cross-version comparison.
