@@ -65,7 +65,7 @@ The 122 bp genomic region a probe targets. Sites within it are in-probe; sites b
 _Avoid_: probe region (generic), capture region
 
 **In-Probe Site Set**:
-A probe's per-CpG sites that fall within the Probe Window. Under the assumed ±61 bp window: 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site (cg14861089 has none — its 450K mapinfo is displaced ~963 bp from its true sites, all of which sit inside its client capture region). Membership is window-dependent; re-derive if the client's scripts define the window differently.
+A probe's per-CpG sites that fall within the Probe Window. Under the assumed ±61 bp window: 11% of measured sites (3,546/32,084 unenriched; 5,865/54,300 enriched); 147/148 probes have at least one in-probe site. The sole exception, cg14861089, is a client-confirmed mislabel (2026-09-16): the catalog entry really belongs to cg24812837, mapinfo 102,894,120 — under the corrected identity all 148 probes have in-probe sites. Relabel deferred to ticket #19; labels stay as-is until then. Membership is window-dependent; re-derive if the client's scripts define the window differently.
 
 **Flanking-Inclusive Site Set**:
 All measured per-CpG sites of a probe regardless of position — the site set of the original per-CpG versions. Under the assumed ±61 bp window: 89% of sites are flanking (beyond the window); 91/148 probes carry flanking sites; site spans reach a median 529 bp (max 8,975 bp). The tt39 probe set is fully in-probe (verified 2026-09-08).
